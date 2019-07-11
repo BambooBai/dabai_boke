@@ -1,0 +1,69 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h4 id="基础string实战url地址栏问好参数截取">基础：String：实战：URL地址栏问好参数截取</h4>
+
+<p></p>
+
+<blockquote>
+  <p><strong>分析：</strong></p>
+  
+  <ul><li><p>URL地址包含很多部分</p></li>
+  <li><p>问号后面的是地址参数</p></li>
+  <li><p>井号后面的是哈希值(HASH)</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">   {
+</div><div class="hljs-line">    <span class="hljs-attr">name</span>:<span class="hljs-string">'aa'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">age</span>:<span class="hljs-number">20</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">sex</span>:<span class="hljs-number">0</span>
+</div><div class="hljs-line">   }
+</div><div class="hljs-line"> <span class="hljs-comment">// #后面的HASH值可能有可能没有</span>
+</div><div class="hljs-line"> <span class="hljs-keyword">var</span> str = <span class="hljs-string">'http://www.zhufengpeixun.cn/stu/?name=aa&amp;age=20&amp;sex=0#teacher'</span>;
+</div></code></pre>
+
+<blockquote>
+  <p><strong>以⬆️str为例分析：</strong></p>
+  
+  <ol><li rel="1"><p>分别获取问号和井号的索引</p></li>
+  <li rel="2"><p>从问号后面开始截取字符串（如果有#，截取到#的前面，没有#截取到字符串的末尾） <br>
+  <code>=&gt;name=aa&amp;age=20&amp;sex=0</code></p></li>
+  <li rel="3"><p>在按照&amp;拆成三部分 <br>
+  <code>['name=aa','age=20','sex=0']</code></p></li>
+  <li rel="4"><p>依次遍历数组中的每一项，把每一项按照“=”在进行拆分</p>
+  
+  <ul>
+  <li><p>拆出来的第一部分是对象的属性名</p></li>
+  <li><p>第二部分是对象的属性值</p></li></ul></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> indexASK = str.indexOf(<span class="hljs-string">'?'</span>),
+</div><div class="hljs-line">    indexWELL = str.indexOf(<span class="hljs-string">'#'</span>);
+</div><div class="hljs-line"><span class="hljs-comment">/*if (indexWELL &gt; -1) {//=&gt;有#</span>
+</div><div class="hljs-line"><span class="hljs-comment">    str = str.substring(indexASK + 1, indexWELL);</span>
+</div><div class="hljs-line"><span class="hljs-comment">} else {</span>
+</div><div class="hljs-line"><span class="hljs-comment">    str = str.substring(indexASK + 1);</span>
+</div><div class="hljs-line"><span class="hljs-comment">}*/</span>
+</div><div class="hljs-line">indexWELL === <span class="hljs-number">-1</span> ? indexWELL = str.length : <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">str = str.substring(indexASK + <span class="hljs-number">1</span>, indexWELL);
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;"name=aa&amp;age=20&amp;sex=0"</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> ary = str.split(<span class="hljs-string">'&amp;'</span>),<span class="hljs-comment">//=&gt;["name=aa", "age=20", "sex=0"]</span>
+</div><div class="hljs-line">    obj = {};
+</div><div class="hljs-line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; ary.length; i++) {
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> item = ary[i],
+</div><div class="hljs-line">        itemAry = item.split(<span class="hljs-string">'='</span>);<span class="hljs-comment">//=&gt;["name","aa"] / ["age",20]...</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> key = itemAry[<span class="hljs-number">0</span>],
+</div><div class="hljs-line">        value = itemAry[<span class="hljs-number">1</span>];
+</div><div class="hljs-line">    obj[key] = value;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(obj);
+</div></code></pre></div>

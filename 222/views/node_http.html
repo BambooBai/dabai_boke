@@ -1,0 +1,75 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="深入nodehttp">深入：Node：Http</h3>
+
+<p></p>
+
+<p>最大端口号：65535，用的时候不要低于3000</p>
+
+
+
+<h4 id="使用终端发送请求">使用终端发送请求</h4>
+
+<p>命令：<code>curl -V http://baidu.com</code>，发送请求 <br>
+<code>nodemon</code>工具：只要文件发生变化，就会重新启动 <br>
+安装：<code>sudo npm install nodemon -g</code> <br>
+使用：<code>nodemon 文件名</code></p>
+
+<p>发送post请求命令：<code>curl -v -X POST -d "username=123&amp;password=111 " http://localhost:3000</code></p>
+
+
+
+<h4 id="请求和响应">请求和响应</h4>
+
+<ul><li><p>请求三部分： </p>
+
+<ol>
+<li rel="1"><p>请求行  ：请求方法、请求路径、http版本信息</p></li>
+<li rel="2"><p>请求头  ：浏览器信息+自定义</p></li>
+<li rel="3"><p>请求体</p></li></ol></li>
+</ul>
+
+<blockquote>
+  <p>在创建服务后：request 可读流，，reqponse可写流 <br>
+  所以：请求体需要<strong>on(‘data’)</strong> 来接收数据</p>
+</blockquote>
+
+<ul><li><p>响应三部分：</p>
+
+<ol>
+<li rel="1"><p>响应行 ：状态码、http版本信息  </p></li>
+<li rel="2"><p>响应头</p></li>
+<li rel="3"><p>响应体 <br>
+<br></p></li></ol></li>
+<li><p>常用状态码： <br>
+2开头的：<code>200 204(没有响应体) 206(范围请求)</code> <br>
+3开头的：<code>301(永久转移) 302(临时转移；负载均衡) 304缓存</code> <br>
+4开头的：<code>401(没权限) 403(无法访问)  404(找不到)</code> <br>
+5开头的：<code>500(服务器挂了)</code> <br>
+<br></p></li>
+<li><p>设置响应头： <br>
+<code>response.setHeader('a':'1')</code> <br>
+<br></p></li>
+<li><p>后台解析<strong>name=55&amp;age=25</strong> <br>
+<code>querystring.parse()</code> <br>
+<br></p></li>
+<li><p>功能：</p>
+
+<ol>
+<li rel="1"><p><code>createClient()</code> 爬虫</p></li>
+<li rel="2"><p>上传文件</p></li></ol></li>
+</ul>
+
+
+
+<h4 id="二服务器向服务端发送请求">二、服务器向服务端发送请求</h4>
+
+<p><strong>应用：</strong></p>
+
+<ul><li><p>中间层：解决跨域问题（目前有性能问题）</p></li>
+<li><p>爬虫</p></li>
+</ul></div>

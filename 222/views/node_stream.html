@@ -1,0 +1,141 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="深入node流stream">深入：NODE：流Stream</h3>
+
+<p></p>
+
+
+
+<h4 id="一分类">一、分类</h4>
+
+<blockquote>
+  <p><code>可读流（request）</code>、<code>可写流（response）</code>、<code>双工流</code>、<code>转化流（压缩）</code></p>
+</blockquote>
+
+
+
+<h4 id="二优点">二、优点：</h4>
+
+<p>可以分段读写、控制速率</p>
+
+
+
+<h4 id="三可读流">三、可读流</h4>
+
+<ol><li rel="1"><p><code>new Stream</code>返回的是可读流的实例</p></li>
+<li rel="2"><p><code>fs.createReadStream</code>读流 <br>
+读流的事件：</p>
+
+<ul>
+<li><p><code>on('data')</code>  触发读取流</p></li>
+<li><p><code>on('end')</code> 读取完毕</p></li>
+<li><p><code>on('error')</code>出错</p></li>
+<li><p><code>pause()</code>：暂停（读写时，读快，写慢，会让读暂停）</p></li>
+<li><p><code>resume()</code>：恢复data事件触发</p></li></ul></li>
+<li rel="3"><p>怎么才能把最终内容打印出来？</p>
+
+<ul>
+<li><p>因为读流是分段读取，所以在on(‘data’)触发读取流，只能读到每一段的流</p></li>
+<li><p>在<code>end</code>事件读取完后，把在on(‘data’)读取到的拼接</p></li>
+<li><p>⚠️注意：这里不能使用字符串拼接，🉑️自行实验</p></li>
+<li><p>✅正确：声明一个数组，在触发流的时候，push进去，在读取完后，<code>Buffer.concat(arr).toString()</code></p></li></ul></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>); <span class="hljs-comment">// 文件中为了能实现文件的操作 也提供了流相关的api</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-comment">// new ReadStream 返回的是可读流的实例</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> rs = fs.createReadStream(path.resolve(__dirname,<span class="hljs-string">'name2.txt'</span>),{
+</div><div class="hljs-line">    <span class="hljs-attr">flags</span>:<span class="hljs-string">'r'</span>, <span class="hljs-comment">// r w </span>
+</div><div class="hljs-line">    highWaterMark:<span class="hljs-number">4</span>, <span class="hljs-comment">// 64k</span>
+</div><div class="hljs-line">    encoding:<span class="hljs-literal">null</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">autoClose</span>:<span class="hljs-literal">true</span>, <span class="hljs-comment">// 读取完毕后 关闭文件吗</span>
+</div><div class="hljs-line">    start:<span class="hljs-number">0</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">end</span>:<span class="hljs-number">5</span> <span class="hljs-comment">// slice(start,end) 包含end的</span>
+</div><div class="hljs-line">});
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> arr = []; <span class="hljs-comment">// 异步触发的</span>
+</div><div class="hljs-line">rs.on(<span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(err);
+</div><div class="hljs-line">})
+</div><div class="hljs-line">rs.on(<span class="hljs-string">'data'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">chunk</span>)</span>{
+</div><div class="hljs-line">    arr.push(chunk);
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(chunk);
+</div><div class="hljs-line">    rs.pause(); <span class="hljs-comment">// 暂停data事件的触发</span>
+</div><div class="hljs-line">});
+</div><div class="hljs-line">rs.on(<span class="hljs-string">'end'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(Buffer.concat(arr).toString()); <span class="hljs-comment">// 读取完毕</span>
+</div><div class="hljs-line">}); 
+</div><div class="hljs-line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">    rs.resume(); <span class="hljs-comment">// 恢复data事件触发</span>
+</div><div class="hljs-line">},<span class="hljs-number">1000</span>);
+</div></code></pre>
+
+
+
+<h4 id="四可写流">四、可写流</h4>
+
+<ol><li rel="1"><p>方法： <br>
+<code>write</code>：表示你写入的内容 已经大于 预计的水位线 highwatermark <br>
+<code>end()</code> <br>
+⚠️注意：我们写入的内容必须 是buffer ／ 字符串</p></li>
+<li rel="3"><p>上代码</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>); 
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-comment">// 可写流 有两个方法 write() end();</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> ws = fs.createWriteStream(path.resolve(__dirname,<span class="hljs-string">'name1.txt'</span>),{
+</div><div class="hljs-line">    <span class="hljs-attr">flags</span>:<span class="hljs-string">'w'</span>, <span class="hljs-comment">// w：文件不存在会创建一个文件 如果有内容会清空内容</span>
+</div><div class="hljs-line">    encoding:<span class="hljs-string">'utf8'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">highWaterMark</span>: <span class="hljs-number">5</span>,<span class="hljs-comment">// 每次我预计写入多少个  16k</span>
+</div><div class="hljs-line">    autoClose:<span class="hljs-literal">true</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">start</span>:<span class="hljs-number">0</span>
+</div><div class="hljs-line">});
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> flag = ws.write(<span class="hljs-number">123</span>+<span class="hljs-string">''</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'写入成功'</span>)
+</div><div class="hljs-line">}); <span class="hljs-comment">// 可读流 ＋ 可写流   每次读十个 －》去写入文件 －》先别去读取了</span>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(flag);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 当我写入完后 在继续写入其他的 on('drain');</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 处理异步 内部创建了空间  [123,'结束']</span>
+</div><div class="hljs-line">ws.end(<span class="hljs-string">'结束'</span>);
+</div><div class="hljs-line">ws.write(<span class="hljs-number">123</span>+<span class="hljs-string">''</span>); <span class="hljs-comment">// write after end 已经结束了 不能在写入了</span>
+</div></code></pre>
+
+
+
+<h4 id="五读写流混合">五、读写流混合</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-comment">// node 的流 是最复杂的</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> r = fs.createReadStream(path.resolve(__dirname,<span class="hljs-string">'name.txt'</span>),{
+</div><div class="hljs-line">    <span class="hljs-attr">highWaterMark</span>:<span class="hljs-number">3</span>
+</div><div class="hljs-line">});
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> w = fs.createWriteStream(path.resolve(__dirname,<span class="hljs-string">'write.txt'</span>),{
+</div><div class="hljs-line">    <span class="hljs-attr">highWaterMark</span>:<span class="hljs-number">1</span>,
+</div><div class="hljs-line">});
+</div><div class="hljs-line">r.pipe(w); <span class="hljs-comment">// 把可读流 倒入到 可写流中</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">pipe</span>(<span class="hljs-params">r,w</span>)</span>{
+</div><div class="hljs-line">    r.on(<span class="hljs-string">'data'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> flag = w.write(data);
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(!flag) r.pause();
+</div><div class="hljs-line">    });
+</div><div class="hljs-line">    <span class="hljs-comment">// 等待写入完成后 恢复读取</span>
+</div><div class="hljs-line">    r.on(<span class="hljs-string">'end'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'文件读取完毕'</span>);
+</div><div class="hljs-line">        w.end();
+</div><div class="hljs-line">    });  <span class="hljs-comment">// readFile 可以读取 64k以下的文件 </span>
+</div><div class="hljs-line">}; <span class="hljs-comment">//  fileReader</span>
+</div><div class="hljs-line"><wbr>
+</div></code></pre></div>

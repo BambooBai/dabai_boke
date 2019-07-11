@@ -1,0 +1,274 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vue基础">Vue：基础</h3>
+
+<p></p>
+
+
+
+<h4 id="一mvvm和mvm的区别">一：MVVM和MVM的区别</h4>
+
+
+
+<h4 id="二mvvm的原理">二、MVVM的原理</h4>
+
+<ol start="1"><li rel="1"><p>对象obj={name:’dabai’} 问？ <br>
+obj.age会改变吗？为什么？ <br>
+obj.name会改变吗？为什么？</p></li>
+</ol>
+
+<blockquote>
+  <p><strong>实例vm上挂载的属性方法：</strong> <br>
+  <code>$el</code>vm实例根dom元素、<code>$options</code>初始化的选项、<code>$nextTick</code>数据更新后，获取新的数据，微任务、<code>watch</code>：监控属性变化</p>
+</blockquote>
+
+<ol start="2"><li rel="2"><p>修改数据后，为什么打印数据，结果还是没有修改前的？ <br>
+<code>数据变化后更新视图操作是异步执行的；解决办法：nextTick获取更新后的数据</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">    </span><span class="hljs-template-variable">{{msg}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><span class="hljs-template-variable">{{arr}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">    <span class="hljs-keyword">let</span> vm=<span class="hljs-keyword">new</span> Vue({
+</div><div class="hljs-line">        <span class="hljs-attr">el</span>:<span class="hljs-string">'#app'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">data</span>:{
+</div><div class="hljs-line">            <span class="hljs-attr">msg</span>:<span class="hljs-string">'hello'</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">info</span>:{<span class="hljs-attr">xxx</span>:<span class="hljs-string">'xxx'</span>},
+</div><div class="hljs-line">            <span class="hljs-attr">arr</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>]
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    })
+</div><div class="hljs-line">    vm.arr=[<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>]
+</div><div class="hljs-line">    vm.arr=[<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>];
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(vm.$el.innerHTML)
+</div><div class="hljs-line">    <span class="hljs-comment">//使用nextTick通过回调函数获取新的数据</span>
+</div><div class="hljs-line">    vm.$nextTick(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(vm.$el.innerHTML)
+</div><div class="hljs-line">    })
+</div></code></pre>
+
+
+
+<p><img longdesc="./1554105458067.png" alt="Alt text" title="" type="image/png" class="" src="data:image/png;base64,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"></p>
+
+
+
+<h4 id="二template取值">二、template:取值</h4>
+
+<p>取值表达式  可以 <code>运算</code> , <code>取值</code> ， 做<code>三元</code>、不能写函数，因为每次更新视图，都会重新执行函数</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml">    <span class="hljs-comment">&lt;!-- 取值表达式  可以 运算  , 取值 ， 做三元 --&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">        {{1+1}} </span>
+</div><div class="hljs-line"><span class="xml">        </span><span class="hljs-template-variable">{{msg}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml">        </span><span class="hljs-template-variable">{{flag?'ok':'no'}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml">        {{ {name:1} }}</span>
+</div><div class="hljs-line"><span class="xml">        {{ 'msg' + 'hello'}}</span>
+</div></code></pre>
+
+
+
+<h4 id="三命令">三、命令</h4>
+
+<p><code>v-once</code>：只执行一次，内部会进行缓存 以后使用的都是缓存里的结果 <br>
+<code>v-html</code>：innerHTML XSS攻击  不能将用户输入的内容展现出来 内容必须是可信任的 <br>
+<code>v-if</code>：如果不成里 dom就会消失</p>
+
+<blockquote>
+  <p>注意：如果v-if和v-else有同样的元素，需要加key标识</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">  &lt;div v-<span class="hljs-keyword">if</span>=<span class="hljs-string">"flag"</span>&gt;
+</div><div class="hljs-line">     <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>大白<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>
+</div><div class="hljs-line">      &lt;input type=<span class="hljs-string">"text"</span> key=<span class="hljs-string">"1"</span>&gt;
+</div><div class="hljs-line">  <span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line">  &lt;div v-<span class="hljs-keyword">else</span>&gt;
+</div><div class="hljs-line">      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>架构<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>
+</div><div class="hljs-line">      &lt;input type=<span class="hljs-string">"text"</span> key=<span class="hljs-string">"2"</span>&gt;
+</div><div class="hljs-line">  <span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div></code></pre>
+
+<p><code>v-show</code>：不支持template；只是样式上的显示隐藏 <br>
+<code>v-for</code>：循环数组或者对象，vue 2.5 以上要求 必须在循环时 使用key属性</p>
+
+<blockquote>
+  <p>注意：</p>
+  
+  <ul><li><p><code>v-for</code>中template不能使用key；<strong>解决办法</strong>：在template中标签加key；</p></li>
+  <li><p>尽量<code>不要使用index作为key</code>，如果有id，尽量使用id作为唯一标识； <br>
+  如果是单纯的显示，用key是没有问题，如果有排序等动态，使用index，在比较的时候，会消耗更多的性能；</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">&lt;div v-<span class="hljs-keyword">for</span>=<span class="hljs-string">"(fruit,index) in fruits"</span> :key=<span class="hljs-string">"index"</span>&gt;
+</div><div class="hljs-line">    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-if</span>=<span class="hljs-string">"index%2"</span>&gt;</span>{{fruit}}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line">     &lt;div v-<span class="hljs-keyword">else</span>&gt;{{index}}&lt;<span class="hljs-regexp">/div&gt;</span>
+</div><div class="hljs-line"><span class="hljs-regexp"> &lt;/</span>div&gt;
+</div><div class="hljs-line"> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">template</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">"i in 3"</span> &gt;</span></span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">:key</span>=<span class="hljs-string">"i+'_1'"</span> <span class="hljs-attr">:a</span>=<span class="hljs-string">"i+'_1'"</span>&gt;</span>{{i}}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">     <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">:key</span>=<span class="hljs-string">"`${i}_2`"</span> <span class="hljs-attr">:a</span>=<span class="hljs-string">"`${i}_2`"</span> <span class="hljs-attr">a</span>=<span class="hljs-string">"{{i}}"</span>&gt;</span>{{i}}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"> <span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</div></code></pre>
+
+<p><code>v-model</code> 双向绑定 <br>
+和<code>&lt;input type="text" :value="msg" @input="e=&gt;msg=e.target.value"&gt;</code>效果一样</p>
+
+<ul><li><p><strong>input的使用</strong></p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">    &lt;input type=<span class="hljs-string">"text"</span> name=<span class="hljs-string">""</span> v-model=<span class="hljs-string">"text"</span>&gt;{{text}}
+</div><div class="hljs-line">    &lt;script&gt;
+</div><div class="hljs-line">        data:{
+</div><div class="hljs-line">            <span class="hljs-attr">text</span>:<span class="hljs-string">''</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    &lt;<span class="hljs-regexp">/script&gt;</span>
+</div></code></pre>
+
+<ul><li><p><strong>select的使用</strong> <br>
+如果是多选，data中selectValue默认值为数组[],slect属性<code>multiple</code></p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"selectValue"</span> &gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"0"</span> <span class="hljs-attr">disabled</span>&gt;</span>请选择<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">"(list,key) in lists"</span> <span class="hljs-attr">:value</span>=<span class="hljs-string">"list.id"</span>&gt;</span></span><span class="hljs-template-variable">{{list.value}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript"></span></span>
+</div><div class="hljs-line"><span class="xml">data:{</span>
+</div><div class="hljs-line"><span class="xml">    lists:[{value:<span class="hljs-string">'菜单1'</span>,id:<span class="hljs-number">1</span>},{value:<span class="hljs-string">'菜单2'</span>,id:<span class="hljs-number">2</span>},{value:<span class="hljs-string">'菜单3'</span>,id:<span class="hljs-number">3</span>}],</span>
+</div><div class="hljs-line"><span class="xml">    selectValue:<span class="hljs-string">'0'</span></span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div></code></pre>
+
+<ul><li><p><strong>radio的使用</strong> <br>
+radio  可以根据v-model来进行分组</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"> 男：<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"radio"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"radioValue"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"男"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"> 女：<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"radio"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"radioValue"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"女"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">  </span><span class="hljs-template-variable">{{radioValue}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml"> <span class="hljs-tag">&lt;<span class="hljs-name">scripts</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"> data:{</span>
+</div><div class="hljs-line"><span class="xml">    radioValue:[],</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"> <span class="hljs-tag">&lt;/<span class="hljs-name">scripts</span>&gt;</span></span>
+</div></code></pre>
+
+<ul><li><p><strong>checkbox的使用</strong></p>
+
+<ol>
+<li rel="1"><p>checkValue会自动根据勾选状态赋值true或者false;<code>一般会用于全选或者取消全选</code></p></li></ol></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"checkbox"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"checkValue"</span>&gt;</span> </span><span class="hljs-template-variable">{{checkValue}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">scripts</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">data:{</span>
+</div><div class="hljs-line"><span class="xml">    checkValue:true</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">scripts</span>&gt;</span></span>
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>普通选择</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml">  游泳：<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"checkbox"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"checkValues"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"游泳"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">  健身<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"checkbox"</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">"checkValues"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"健身"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">     </span><span class="hljs-template-variable">{{checkValues}}</span><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">scripts</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">      data:{</span>
+</div><div class="hljs-line"><span class="xml">        checkValues:[]</span>
+</div><div class="hljs-line"><span class="xml">        }</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">scripts</span>&gt;</span></span>
+</div></code></pre>
+
+
+
+<h4 id="四修饰符">四、修饰符</h4>
+
+<ol start="1"><li rel="1"><p>v-model修饰符 <br>
+<code>v-module.number</code>、<code>trim</code>可以连着使用</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs stylus"><div class="hljs-line">  &lt;<span class="hljs-selector-tag">input</span> type=<span class="hljs-string">"text"</span> v-model<span class="hljs-selector-class">.number</span><span class="hljs-selector-class">.trim</span>=<span class="hljs-string">"val"</span>&gt; {{val}}
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>键盘修饰符 鼠标的修饰符(修饰符连着用)</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> &lt;input type=<span class="hljs-string">"text"</span> @keyup.ctrl.enter=<span class="hljs-string">"fn"</span>&gt;
+</div><div class="hljs-line"> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript"></span></span>
+</div><div class="hljs-line"><span class="xml"> methods:{</span>
+</div><div class="hljs-line"><span class="xml">    fn(){</span>
+</div><div class="hljs-line"><span class="xml">        alert(<span class="hljs-string">'enter修饰符'</span>)</span>
+</div><div class="hljs-line"><span class="xml">    }</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"> <span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div></code></pre>
+
+<p><code>修饰符还可以自定义配置：</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> Vue.config.keyCodes = { <span class="hljs-comment">// 配置一个键盘code别名</span>
+</div><div class="hljs-line">    <span class="hljs-string">'f1'</span>:<span class="hljs-number">112</span>
+</div><div class="hljs-line">  };
+</div></code></pre>
+
+
+
+<h4 id="五绑定">五、绑定</h4>
+
+<ul><li><p>通过:true或者false的方法</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs scala"><div class="hljs-line">&lt;input <span class="hljs-class"><span class="hljs-keyword">type</span></span>=<span class="hljs-symbol">'tex</span>t' <span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-symbol">'ab</span>c' :<span class="hljs-class"><span class="hljs-keyword">class</span></span>=<span class="hljs-symbol">'b</span>:<span class="hljs-literal">true</span>'&gt;
+</div></code></pre>
+
+<ul><li><p>通过<code>数组</code>方式</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"abc"</span> <span class="hljs-attr">:class</span>=<span class="hljs-string">"['a','b',c]"</span>&gt;</span>343<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div></code></pre>
+
+<ul><li><p>内联样式 <br>
+<code>:style要优于style样式</code></p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">"color:red"</span> <span class="hljs-attr">:style</span>=<span class="hljs-string">"{background:'blue'}"</span>&gt;</span>xxx<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">"color:red"</span> <span class="hljs-attr">:style</span>=<span class="hljs-string">"[{background:'red',color:'blue'}]"</span>&gt;</span>xxx1<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div></code></pre></div>

@@ -1,0 +1,275 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础数据类型转换汇总">基础：数据类型：转换汇总</h3>
+
+<p></p>
+
+<blockquote>
+  <p>JS中的数据类型分为</p>
+  
+  <ul><li><p>【基本数据类型】 <br>
+  数字 number <br>
+  字符串 string <br>
+  布尔 boolean <br>
+  空 null <br>
+  未定义 undefined</p></li>
+  <li><p>【引用数据类型】</p>
+  
+  <ul>
+  <li><p>对象 object <br>
+  普通对象 <br>
+  数组对象 (Array) <br>
+  正则对象 (RegExp) <br>
+  日期对象 (Date) <br>
+  数学函数 (Math) <br>
+  …</p></li>
+  <li><p>函数 function</p></li></ul></li>
+  </ul>
+</blockquote>
+
+<p><code>真实项目中，根据需求，我们往往需要把数据类型之间进行转换</code></p>
+
+
+
+<h4 id="一把其他数据类型转换为number类型">一、把其他数据类型转换为number类型</h4>
+
+<p><code>1、发生的情况</code></p>
+
+<ul><li><p>isNaN 检测的时候：当检测的值不是数据类型，浏览器会自己调用Number方法把它转换为数字，然后再检测是否有效数字</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-string">'3'</span>) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line">  <span class="hljs-built_in">Number</span>(<span class="hljs-string">'3'</span>)-&gt;<span class="hljs-number">3</span>
+</div><div class="hljs-line">  <span class="hljs-built_in">isNaN</span>(<span class="hljs-number">3</span>)-&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-string">'3px'</span>) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line">  <span class="hljs-built_in">Number</span>(<span class="hljs-string">'3px'</span>)-&gt;<span class="hljs-literal">NaN</span>
+</div><div class="hljs-line">  <span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">NaN</span>)-&gt;<span class="hljs-literal">true</span>
+</div></code></pre>
+
+<ul><li><p>基于parseInt/parseFloat/Number去手动转换为数字类型</p></li>
+<li><p>数学运算：+ - * / %，但是“+”不仅仅是数学运算，还可能是字符串拼接</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-string">'3'</span><span class="hljs-number">-1</span> =&gt;<span class="hljs-number">2</span>
+</div><div class="hljs-line">  <span class="hljs-built_in">Number</span>(<span class="hljs-string">'3'</span>)-&gt;<span class="hljs-number">3</span>
+</div><div class="hljs-line">  <span class="hljs-number">3</span><span class="hljs-number">-1</span>-&gt;<span class="hljs-number">2</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-string">'3px'</span><span class="hljs-number">-1</span> =&gt;<span class="hljs-literal">NaN</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-string">'3px'</span>+<span class="hljs-number">1</span> =&gt;<span class="hljs-string">'3px1'</span> 字符串拼接
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> i=<span class="hljs-string">'3'</span>;
+</div><div class="hljs-line">i=i+<span class="hljs-number">1</span>; =&gt;<span class="hljs-string">'31'</span>
+</div><div class="hljs-line">i+=<span class="hljs-number">1</span>; =&gt;<span class="hljs-string">'31'</span>
+</div><div class="hljs-line">i++; =&gt;<span class="hljs-number">4</span>  i++就是单纯的数学运算，已经摒弃掉字符串拼接的规则
+</div></code></pre>
+
+<ul><li><p>在基于“==”比较的时候，有时候也会把其它值转换为数字类型</p></li>
+<li><p>…</p></li>
+</ul>
+
+<p><code>2、转换规律</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">//=&gt;转换的方法：Number（浏览器自行转换都是基于这个方法完成的）</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【把字符串转换为数字】
+</div><div class="hljs-line">只要遇到一个非有效数字字符，结果就是<span class="hljs-literal">NaN</span>
+</div><div class="hljs-line"><span class="hljs-string">''</span> -&gt;<span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-string">' '</span> -&gt;<span class="hljs-number">0</span> 空格(Space)
+</div><div class="hljs-line"><span class="hljs-string">'\n'</span> -&gt;<span class="hljs-number">0</span> 换行符(Enter)
+</div><div class="hljs-line"><span class="hljs-string">'\t'</span> -&gt;<span class="hljs-number">0</span> 制表符(Tab)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【把布尔转换为数字】
+</div><div class="hljs-line"><span class="hljs-literal">true</span> -&gt;<span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-literal">false</span> -&gt;<span class="hljs-number">0</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【把没有转换为数字】
+</div><div class="hljs-line"><span class="hljs-literal">null</span> -&gt;<span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-literal">undefined</span> -&gt;<span class="hljs-literal">NaN</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【把引用类型值转换为数字】
+</div><div class="hljs-line">首先都先转换为字符串（toString），然后再转换为数字（<span class="hljs-built_in">Number</span>）
+</div></code></pre>
+
+
+
+<h4 id="二把其他类型转换为字符串">二、把其他类型转换为字符串</h4>
+
+<p><code>1、发生的情况</code></p>
+
+<ul><li><p>基于<strong><code>alert/confirm/prompt/document.write</code></strong>等方法输出内容的时候，会把输出的值转换为字符串，然后再输出</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">alert(<span class="hljs-number">1</span>) =&gt;<span class="hljs-string">'1'</span>
+</div></code></pre>
+
+<ul><li><p>基于“+”进行字符串拼接的时候</p></li>
+<li><p>把<strong>引用类型值转换为数字</strong>的时候，首先会<strong>转换为字符串，然后再转换为数字</strong></p></li>
+<li><p>给对象设置属性名，如果不是字符串，首先转换为字符串，然后再当做属性存储到对象中（<strong><code>对象的属性只能是数字或者字符串</code></strong>）</p></li>
+<li><p>手动调用<strong><code>toString/toFixed/join/String</code></strong>等方法的时候，也是为了转换为字符串</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> n=<span class="hljs-built_in">Math</span>.PI;<span class="hljs-comment">//=&gt;获取圆周率：</span>
+</div><div class="hljs-line">n.toFixed(<span class="hljs-number">2</span>) =&gt;<span class="hljs-string">'3.14'</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> ary=[<span class="hljs-number">12</span>,<span class="hljs-number">23</span>,<span class="hljs-number">34</span>];
+</div><div class="hljs-line">ary.join(<span class="hljs-string">'+'</span>) =&gt;<span class="hljs-string">'12+23+34'</span>
+</div></code></pre>
+
+<ul><li><p>…</p></li>
+</ul>
+
+<p><code>2、转换规律</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">//=&gt;调用的方法：toString</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【除了对象，都是你理解的转换结果】
+</div><div class="hljs-line"><span class="hljs-number">1</span> -&gt;<span class="hljs-string">'1'</span>
+</div><div class="hljs-line"><span class="hljs-literal">NaN</span> -&gt;<span class="hljs-string">'NaN'</span>
+</div><div class="hljs-line"><span class="hljs-literal">null</span> -&gt;<span class="hljs-string">'null'</span>
+</div><div class="hljs-line">[] -&gt;<span class="hljs-string">''</span>
+</div><div class="hljs-line">[<span class="hljs-number">13</span>] -&gt;<span class="hljs-string">'13'</span>
+</div><div class="hljs-line">[<span class="hljs-number">12</span>,<span class="hljs-number">23</span>] -&gt;<span class="hljs-string">'12,23'</span>
+</div><div class="hljs-line">...
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">【对象】
+</div><div class="hljs-line">{<span class="hljs-attr">name</span>:<span class="hljs-string">'xxx'</span>} -&gt;<span class="hljs-string">'[object Object]'</span>
+</div><div class="hljs-line">{} -&gt;<span class="hljs-string">'[object Object]'</span>
+</div><div class="hljs-line">不管是啥样的普通对象，最后结果都一样
+</div></code></pre>
+
+
+
+<h4 id="三-把其它值转换为布尔类型">三、 把其它值转换为布尔类型</h4>
+
+<p><code>1.发生的情况</code></p>
+
+<ul><li><p>基于!/!!/Boolean等方法转换</p></li>
+<li><p>条件判断中的条件最后都会转换为布尔类型</p></li>
+<li><p>…</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">if</span>(n){
+</div><div class="hljs-line">  <span class="hljs-comment">//=&gt;把n的值转换为布尔验证条件真假</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">if</span>(<span class="hljs-string">'3px'</span>+<span class="hljs-number">3</span>){
+</div><div class="hljs-line">  <span class="hljs-comment">//=&gt;先计算表达式的结果'3px3'，把结果转换为布尔true，条件成立</span>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><code>2.转换的规律</code> <br>
+只有“<strong>0/NaN/”/null/undefined”</strong>五个值转换为布尔的false,其余都是转换为true</p>
+
+
+
+<h4 id="五-特殊情况数学运算和字符串拼接">五、 特殊情况：数学运算和字符串拼接 “+”</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">//=&gt;当表达式中出现字符串，就是字符串拼接，否则就是数学运算</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">1</span>+<span class="hljs-function"><span class="hljs-params">true</span> =&gt;</span><span class="hljs-number">2</span> 数学运算
+</div><div class="hljs-line"><span class="hljs-string">'1'</span>+<span class="hljs-function"><span class="hljs-params">true</span> =&gt;</span><span class="hljs-string">'1true'</span> 字符串拼接
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">[<span class="hljs-number">12</span>]+<span class="hljs-number">10</span> =&gt;<span class="hljs-string">'1210'</span> 虽然现在没看见字符串，但是引用类型转换为数字，首先会转换为字符串，所以变为了字符串拼接
+</div><div class="hljs-line">({})+<span class="hljs-number">10</span> =&gt;<span class="hljs-string">"[object Object]10"</span>
+</div><div class="hljs-line">[]+<span class="hljs-number">10</span> =&gt;<span class="hljs-string">"10"</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">{}+<span class="hljs-number">10</span> =&gt;<span class="hljs-number">10</span> 重要：这个和以上说的没有半毛钱关系，因为它根本就不是数学运算，也不是字符串拼接，它是两部分代码
+</div><div class="hljs-line">  {} 代表一个代码块（块级作用域）
+</div><div class="hljs-line">  +<span class="hljs-number">10</span> 才是我们的操作
+</div><div class="hljs-line">  严格写法：{}; +<span class="hljs-number">10</span>;
+</div></code></pre>
+
+<p>思考题：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-number">12</span>+<span class="hljs-literal">true</span>+<span class="hljs-literal">false</span>+<span class="hljs-literal">null</span>+<span class="hljs-literal">undefined</span>+[]+<span class="hljs-string">'大白'</span>+<span class="hljs-literal">null</span>+<span class="hljs-literal">undefined</span>+[]+<span class="hljs-function"><span class="hljs-params">true</span></span>
+</div><div class="hljs-line"><span class="hljs-function">=&gt;</span><span class="hljs-string">'NaN大白nullundefinedtrue'</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">12</span>+<span class="hljs-literal">true</span> -&gt;<span class="hljs-number">13</span>
+</div><div class="hljs-line"><span class="hljs-number">13</span>+<span class="hljs-literal">false</span> -&gt;<span class="hljs-number">13</span>
+</div><div class="hljs-line"><span class="hljs-number">13</span>+<span class="hljs-literal">null</span> -&gt;<span class="hljs-number">13</span>
+</div><div class="hljs-line"><span class="hljs-number">13</span>+<span class="hljs-literal">undefined</span> -&gt;<span class="hljs-literal">NaN</span>
+</div><div class="hljs-line"><span class="hljs-literal">NaN</span>+[] -&gt;<span class="hljs-string">'NaN'</span>
+</div><div class="hljs-line"><span class="hljs-string">'NaN'</span>+<span class="hljs-string">'大白'</span> -&gt;<span class="hljs-string">'NaN大白'</span>
+</div><div class="hljs-line">...
+</div><div class="hljs-line"><span class="hljs-string">'NaN大白trueundefined'</span>
+</div><div class="hljs-line"><span class="hljs-string">'NaN大白trueundefined'</span>+[] -&gt;<span class="hljs-string">'NaN大白trueundefined'</span>
+</div><div class="hljs-line">...
+</div><div class="hljs-line">=&gt;<span class="hljs-string">'NaN大白trueundefinedtrue'</span>
+</div></code></pre>
+
+
+
+<h4 id="特殊情况在进行比较的时候如果左右两边的数据类型不一样则先转换为相同的类型再进行比较">特殊情况：“==”在进行比较的时候，如果左右两边的数据类型不一样，<code>则先转换为相同的类型，再进行比较</code></h4>
+
+<ul><li><p><code>对象==对象</code>：不一定相等，因为对象操作的是引用地址，地址不相同则不相等</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">{<span class="hljs-attr">name</span>:<span class="hljs-string">'xxx'</span>}=={<span class="hljs-attr">name</span>:<span class="hljs-string">'xxx'</span>} =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line">[]==[] =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> obj1={};
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> obj2=obj1;
+</div><div class="hljs-line">obj1==<span class="hljs-function"><span class="hljs-params">obj2</span> =&gt;</span><span class="hljs-literal">true</span>
+</div></code></pre>
+
+<p>———————————————————👆<mark>上面是重点强调的</mark></p>
+
+<ul><li><p><code>对象==数字</code>：把对象转换为数字</p></li>
+<li><p><code>对象==布尔</code>：把对象转换为数字，把布尔也转换为数字</p></li>
+<li><p><code>对象==字符串</code>：把对象转换为数字，把字符串也转换为数字</p></li>
+<li><p><code>字符串==数字</code>：字符串转换为数字</p></li>
+<li><p><code>字符串==布尔</code>：都转换为数字</p></li>
+<li><p><code>布尔==数字</code>：把布尔转换为数字</p></li>
+</ul>
+
+<p><strong><code>不同情况的比较，都是把其它值转换为数字，然后再进行比较的</code></strong></p>
+
+<ul><li><p>null==undefined：true</p></li>
+<li><p>null===undefined：false</p></li>
+<li><p>null&amp;&amp;undefined和其它值都不相等</p></li>
+<li><p>NaN==NaN：false</p></li>
+</ul>
+
+<p><code>NaN和谁都不相等包括自己</code> <br>
+—————————————————-&gt;👆<mark>以上需要特殊记忆</mark></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-number">1</span>==<span class="hljs-function"><span class="hljs-params">true</span> =&gt;</span><span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-number">1</span>==<span class="hljs-function"><span class="hljs-params">false</span> =&gt;</span><span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-number">2</span>==<span class="hljs-function"><span class="hljs-params">true</span> =&gt;</span><span class="hljs-literal">false</span>  规律不要混淆，这里是把<span class="hljs-literal">true</span>变为数字<span class="hljs-number">1</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">[]==<span class="hljs-literal">true</span>：<span class="hljs-literal">false</span>  都转换为数字 <span class="hljs-number">0</span>==<span class="hljs-number">1</span>
+</div><div class="hljs-line">![]==<span class="hljs-literal">true</span>：<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">[]==<span class="hljs-literal">false</span>：<span class="hljs-literal">true</span>  都转换为数字 <span class="hljs-number">0</span>==<span class="hljs-number">0</span>
+</div><div class="hljs-line">![]==<span class="hljs-literal">false</span>：<span class="hljs-literal">true</span>  先算![]，把数组转换为布尔取反=&gt;<span class="hljs-function"><span class="hljs-params">false</span>  =&gt;</span><span class="hljs-literal">false</span>==<span class="hljs-literal">false</span>
+</div></code></pre></div>

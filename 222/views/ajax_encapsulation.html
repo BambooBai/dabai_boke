@@ -1,0 +1,126 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h4 id="0524day4复习总结ajaxjs6">0524DAY4：复习总结ajax.js(6)</h4>
+
+<p></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">;(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">window</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;CREATE AJAX CLASS</span>
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ajax</span>(<span class="hljs-params">options</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> init(options);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;AJAX PROTOTYPE</span>
+</div><div class="hljs-line">    ajax.prototype = {
+</div><div class="hljs-line">        <span class="hljs-attr">constructor</span>: ajax,
+</div><div class="hljs-line">        check() {
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.url.indexOf(<span class="hljs-string">'?'</span>) &gt; <span class="hljs-number">-1</span> ? <span class="hljs-string">'&amp;'</span> : <span class="hljs-string">'?'</span>;
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        handleDataType(xhr) {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> dataType = <span class="hljs-keyword">this</span>.dataType.toUpperCase(),
+</div><div class="hljs-line">                result = xhr.responseText;
+</div><div class="hljs-line">            <span class="hljs-keyword">switch</span> (dataType) {
+</div><div class="hljs-line">                <span class="hljs-keyword">case</span> <span class="hljs-string">'TEXT'</span>:
+</div><div class="hljs-line">                    <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">case</span> <span class="hljs-string">'JSON'</span>:
+</div><div class="hljs-line">                    result = <span class="hljs-built_in">JSON</span>.parse(result);
+</div><div class="hljs-line">                    <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">case</span> <span class="hljs-string">'XML'</span>:
+</div><div class="hljs-line">                    result = xhr.responseXML;
+</div><div class="hljs-line">                    <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> result;
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        handleData() {
+</div><div class="hljs-line">            <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">             * 1.如果DATA传递的是一个对象,我们需要把它转换为X-WWW-FORM-URLENCODED这种字符串的格式（客户端传递给服务器端的内容一般都是这种格式，除此之外还有RAW等）</span>
+</div><div class="hljs-line"><span class="hljs-comment">             * 2.如果是GET请求,我们需要把第一步解析后的结果放到URL的末尾,基于“问号传参传递过去”(如果是POST不需要管)</span>
+</div><div class="hljs-line"><span class="hljs-comment">             */</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> {method, data} = <span class="hljs-keyword">this</span>;
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (!data) <span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> data === <span class="hljs-string">'object'</span>) {
+</div><div class="hljs-line">                <span class="hljs-keyword">let</span> str = <span class="hljs-string">``</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> data) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (data.hasOwnProperty(attr)) {
+</div><div class="hljs-line">                        str += <span class="hljs-string">`<span class="hljs-subst">${attr}</span>=<span class="hljs-subst">${data[attr]}</span>&amp;`</span>;
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">                str = str.substring(<span class="hljs-number">0</span>, str.length - <span class="hljs-number">1</span>);
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.data = data = str;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (_regGET.test(method)) {
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.url += <span class="hljs-string">`<span class="hljs-subst">${<span class="hljs-keyword">this</span>.check()}</span><span class="hljs-subst">${data}</span>`</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.data = <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        handleCache() {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> {method, cache} = <span class="hljs-keyword">this</span>;
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (cache === <span class="hljs-literal">false</span> &amp;&amp; _regGET.test(method)) {
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.url += <span class="hljs-string">`<span class="hljs-subst">${<span class="hljs-keyword">this</span>.check()}</span>_=<span class="hljs-subst">${+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>())}</span>`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        getServerTime() {
+</div><div class="hljs-line">            <span class="hljs-comment">//...</span>
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        send() {
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.handleData();
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.handleCache();
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;AJAX的四步操作</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> {method, url, <span class="hljs-keyword">async</span>, data, success, error} = <span class="hljs-keyword">this</span>,
+</div><div class="hljs-line">                xhr = <span class="hljs-keyword">new</span> XMLHttpRequest;
+</div><div class="hljs-line">            xhr.open(method, url, <span class="hljs-keyword">async</span>);
+</div><div class="hljs-line">            xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^(2|3)\d{2}$/</span>.test(xhr.status)) {
+</div><div class="hljs-line">                        <span class="hljs-comment">//=&gt;成功</span>
+</div><div class="hljs-line">                        <span class="hljs-keyword">let</span> result = <span class="hljs-keyword">this</span>.handleDataType(xhr);
+</div><div class="hljs-line">                        success.call(<span class="hljs-keyword">this</span>, result, xhr);
+</div><div class="hljs-line">                    } <span class="hljs-keyword">else</span> {
+</div><div class="hljs-line">                        <span class="hljs-comment">//=&gt;失败</span>
+</div><div class="hljs-line">                        error.call(<span class="hljs-keyword">this</span>, xhr.statusText, xhr);
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            xhr.send(data);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;INIT</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> _emptyFn = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Function</span>(<span class="hljs-string">''</span>),
+</div><div class="hljs-line">        _regGET = <span class="hljs-regexp">/^(GET|DELETE|HEAD|TRACE|OPTIONS)$/i</span>,
+</div><div class="hljs-line">        _default = {
+</div><div class="hljs-line">            <span class="hljs-attr">url</span>: <span class="hljs-string">''</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">method</span>: <span class="hljs-string">'GET'</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">data</span>: <span class="hljs-literal">null</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">dataType</span>: <span class="hljs-string">'JSON'</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">async</span>: <span class="hljs-literal">true</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">cache</span>: <span class="hljs-literal">true</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">success</span>: _emptyFn,
+</div><div class="hljs-line">            <span class="hljs-attr">error</span>: _emptyFn
+</div><div class="hljs-line">        };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">init</span>(<span class="hljs-params">options</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;THIS:INIT的实例(相当于AJAX的实例)</span>
+</div><div class="hljs-line">        options = {..._default, ...options};<span class="hljs-comment">//=&gt;Object.assign(_default,options) ES6中新增的合并对象的方法</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> options) {
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (!options.hasOwnProperty(attr)) <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>[attr] = options[attr];
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;SEND AJAX</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.send();
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;让INIT的实例等价于AJAX的实例</span>
+</div><div class="hljs-line">    init.prototype = ajax.prototype;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-built_in">window</span>.ajax = ajax;
+</div><div class="hljs-line">})(<span class="hljs-built_in">window</span>);
+</div></code></pre></div>

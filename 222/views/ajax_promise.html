@@ -1,0 +1,164 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h4 id="0524day4axios3封装ajaxpromisejs7">0524DAY4：AXIOS（3）封装ajaxPromise.js(7)</h4>
+
+<p> <br>
+</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">;(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">window</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;设置默认的参数配置项</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> _default = {
+</div><div class="hljs-line">        <span class="hljs-attr">method</span>: <span class="hljs-string">'GET'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">url</span>: <span class="hljs-string">''</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">baseURL</span>: <span class="hljs-string">''</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">headers</span>: {},                                            
+</div><div class="hljs-line">        <span class="hljs-attr">dataType</span>: <span class="hljs-string">'JSON'</span>, <span class="hljs-comment">//返回的结果</span>
+</div><div class="hljs-line">        data: <span class="hljs-literal">null</span>,<span class="hljs-comment">//=&gt;POST系列请求基于请求主体传递给服务器的内容</span>
+</div><div class="hljs-line">        params: <span class="hljs-literal">null</span>,<span class="hljs-comment">//=&gt;GET系列请求基于问号传参传递给服务器的内容</span>
+</div><div class="hljs-line">        cache: <span class="hljs-literal">true</span>,<span class="hljs-comment">//get默认清缓存的</span>
+</div><div class="hljs-line">    }; 
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;基于PROMISE设计模式管理AJAX请求</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> ajaxPromise = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ajaxPromise</span>(<span class="hljs-params">options</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;OPTIONS中融合了:默认配置信息、用户基于DEFAULTS修改的信息、用户执行GET/POST方法时候传递的配置信息，越靠后的优先级越高</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> {url, baseURL, method, data, dataType, headers, cache, params} = options;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;把传递的参数进一步进行处理</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^(GET|DELETE|HEAD|OPTIONS)$/i</span>.test(method)) {
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;GET系列</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (params) {
+</div><div class="hljs-line">                url += <span class="hljs-string">`<span class="hljs-subst">${ajaxPromise.check(url)}</span><span class="hljs-subst">${ajaxPromise.formatData(params)}</span>`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (cache === <span class="hljs-literal">false</span>) {
+</div><div class="hljs-line">                url += <span class="hljs-string">`<span class="hljs-subst">${ajaxPromise.check(url)}</span>_=<span class="hljs-subst">${+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>())}</span>`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            data = <span class="hljs-literal">null</span>;<span class="hljs-comment">//=&gt;GET系列请求主体就是什么都不放</span>
+</div><div class="hljs-line">        } <span class="hljs-keyword">else</span> {
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;POST系列</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (data) {
+</div><div class="hljs-line">                data = ajaxPromise.formatData(data);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;基于PROMISE发送AJAX</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest;
+</div><div class="hljs-line">            xhr.open(method, <span class="hljs-string">`<span class="hljs-subst">${baseURL}</span><span class="hljs-subst">${url}</span>`</span>);
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;如果HEADERS存在,我们需要设置请求头</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (headers !== <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-keyword">typeof</span> headers === <span class="hljs-string">'object'</span>) {
+</div><div class="hljs-line">                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> headers) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (headers.hasOwnProperty(attr)) {
+</div><div class="hljs-line">                        <span class="hljs-keyword">let</span> val = headers[attr];
+</div><div class="hljs-line">                        <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/[\u4e00-\u9fa5]/</span>.test(val)) {
+</div><div class="hljs-line">                            <span class="hljs-comment">//=&gt;VAL中包含中文:我们把它进行编码</span>
+</div><div class="hljs-line">                            <span class="hljs-comment">//encodeURIComponent/decodeURIComponent</span>
+</div><div class="hljs-line">                            val = <span class="hljs-built_in">encodeURIComponent</span>(val);
+</div><div class="hljs-line">                        }
+</div><div class="hljs-line">                        xhr.setRequestHeader(attr, val);
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^(2|3)\d{2}$/</span>.test(xhr.status)) {
+</div><div class="hljs-line">                        <span class="hljs-keyword">let</span> result = xhr.responseText;
+</div><div class="hljs-line">                        dataType = dataType.toUpperCase();
+</div><div class="hljs-line">                        dataType === <span class="hljs-string">'JSON'</span> ? result = <span class="hljs-built_in">JSON</span>.parse(result) : (dataType === <span class="hljs-string">'XML'</span> ? result = xhr.responseXML : <span class="hljs-literal">null</span>);
+</div><div class="hljs-line">                        resolve(result);
+</div><div class="hljs-line">                        <span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                    reject(xhr.statusText);
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            xhr.send(data);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    <span class="hljs-comment">//如果有拦截器在上面promise加个then</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;把默认配置暴露出去,后期用户在使用的时候可以自己设置一些基础的默认值(发送AJAX请求的时候按照用户配置的信息进行处理)           </span>
+</div><div class="hljs-line">    ajaxPromise.defaults = _default;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;把对象转换为URLENCODED格式的字符串</span>
+</div><div class="hljs-line">    ajaxPromise.formatData = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatData</span>(<span class="hljs-params">obj</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> str = <span class="hljs-string">``</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> obj) {
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (obj.hasOwnProperty(attr)) {
+</div><div class="hljs-line">                str += <span class="hljs-string">`<span class="hljs-subst">${attr}</span>=<span class="hljs-subst">${obj[attr]}</span>&amp;`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> str.substring(<span class="hljs-number">0</span>, str.length - <span class="hljs-number">1</span>);
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    ajaxPromise.check = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">check</span>(<span class="hljs-params">url</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> url.indexOf(<span class="hljs-string">'?'</span>) &gt; <span class="hljs-number">-1</span> ? <span class="hljs-string">'&amp;'</span> : <span class="hljs-string">'?'</span>;
+</div><div class="hljs-line">    };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;GET</span>
+</div><div class="hljs-line">    [<span class="hljs-string">'get'</span>, <span class="hljs-string">'delete'</span>, <span class="hljs-string">'head'</span>, <span class="hljs-string">'options'</span>].forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">        ajaxPromise[item] = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">url, options = {}</span>) </span>{
+</div><div class="hljs-line">            options = {
+</div><div class="hljs-line">                ..._default,<span class="hljs-comment">//=&gt;默认值或者基于defaults修改的值</span>
+</div><div class="hljs-line">                ...options,<span class="hljs-comment">//=&gt;用户调取方法传递的配置项</span>
+</div><div class="hljs-line">                url: url,<span class="hljs-comment">//=&gt;请求的URL地址(第一个参数:默认配置项和传递的配置项中都不会出现URL，只能这样获取)</span>
+</div><div class="hljs-line">                method: item.toUpperCase()<span class="hljs-comment">//=&gt;以后执行肯定是ajaxPromise.head执行，不会设置METHODS这个配置项，我们自己需要配置才可以</span>
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> ajaxPromise(options);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;POST</span>
+</div><div class="hljs-line">    [<span class="hljs-string">'post'</span>, <span class="hljs-string">'put'</span>, <span class="hljs-string">'patch'</span>].forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">        ajaxPromise[item] = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">url, data = {}, options = {}</span>) </span>{
+</div><div class="hljs-line">            options = {
+</div><div class="hljs-line">                ..._default,
+</div><div class="hljs-line">                ...options,
+</div><div class="hljs-line">                <span class="hljs-attr">url</span>: url,
+</div><div class="hljs-line">                <span class="hljs-attr">method</span>: item.toUpperCase(),
+</div><div class="hljs-line">                <span class="hljs-attr">data</span>: data
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> ajaxPromise(options);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-built_in">window</span>.ajaxPromise = ajaxPromise;
+</div><div class="hljs-line">})(<span class="hljs-built_in">window</span>);
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">&lt;script src=<span class="hljs-string">"js/ajaxPromise.js"</span>&gt;<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div><div class="hljs-line">&lt;script&gt;
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;DEFAULT</span>
+</div><div class="hljs-line">    ajaxPromise.defaults.baseURL = <span class="hljs-string">'https://www.easy-mock.com/mock/5b0412beda8a195fb0978627/temp'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;SEND</span>
+</div><div class="hljs-line">    ajaxPromise.get(<span class="hljs-string">'/list'</span>).then(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(result);
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    ajaxPromise.get(<span class="hljs-string">'/info'</span>, {
+</div><div class="hljs-line">        <span class="hljs-attr">params</span>: {
+</div><div class="hljs-line">            <span class="hljs-attr">id</span>: <span class="hljs-number">1000</span>
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        <span class="hljs-attr">cache</span>: <span class="hljs-literal">false</span>
+</div><div class="hljs-line">    }).then(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(result);
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    ajaxPromise.post(<span class="hljs-string">'/add'</span>, {
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>: <span class="hljs-string">'xxx'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">age</span>: <span class="hljs-number">9</span>
+</div><div class="hljs-line">    }, {
+</div><div class="hljs-line">        <span class="hljs-attr">headers</span>: {
+</div><div class="hljs-line">            <span class="hljs-string">'content-type'</span>: <span class="hljs-string">'x-www-form-urlencoded'</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }).then(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(result);
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div></code></pre></div>

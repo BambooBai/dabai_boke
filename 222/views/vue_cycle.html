@@ -1,0 +1,108 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vue生命周期">Vue：生命周期</h3>
+
+<p></p>
+
+<p><code>beforeCreate</code>:实例初始化，数据和事件配置之前，可用于初始化非响应变量 <br>
+<code>created</code>：数据和事件已配置好，可用于ajax获取数据 <br>
+<code>beforeMount</code>：找到对应的模板，但是未编译,未加载真实dom <br>
+<code>mounted</code>：已编译真实dom</p>
+
+<hr>
+
+<p><code>beforeUpdate</code>修改之前; <br>
+<code>mounted</code>：编译真实dom;获取真实页面 <br>
+<code>updated</code>:修改完成；<code>一般不要操作数据 可能会导致死循环</code></p>
+
+<hr>
+
+<p><strong>一般路由切换会销毁</strong> <br>
+<code>beforeDestroy</code>：实例销毁之前调用。这一步，实例仍然完全可用，this仍能获取到实例 <br>
+<code>destroyed</code>：实例销毁后调用，调用后，Vue 实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁</p>
+
+<hr>
+
+<blockquote>
+  <p>注意：</p>
+  
+  <ul><li><p>created阶段的ajax请求与mounted请求的区别：前者页面视图未出现，如果请求信息过多，页面会长时间处于白屏状态</p></li>
+  <li><p>mounted 不会承诺所有的子组件也都一起被挂载。如果你希望等到整个视图都渲染 <br>
+  <code>完毕，可以用 vm.$nextTick</code></p></li>
+  <li><p>vue2.0之后主动调用$destroy()不会移除dom节点，作者不推荐直接destroy这种做法，如果实在需要这样用可以在这个生命周期钩子中手动移除dom节点</p></li>
+  </ul>
+  
+  </blockquote>
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">       <span class="hljs-keyword">var</span> vm = <span class="hljs-keyword">new</span> Vue({
+</div><div class="hljs-line">    <span class="hljs-attr">el</span>: <span class="hljs-string">'#app'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">data</span>: {
+</div><div class="hljs-line">      <span class="hljs-attr">message</span>: <span class="hljs-string">'Vue的生命周期'</span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">methods</span>:{
+</div><div class="hljs-line">        fn(){
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'111'</span>)
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">beforeCreate</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'------beforeCreate创建前状态------'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span> , <span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el); <span class="hljs-comment">//undefined</span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); <span class="hljs-comment">//undefined </span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message) 
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">created</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'------created创建完毕状态------'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>)
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el); <span class="hljs-comment">//undefined</span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); <span class="hljs-comment">//已被初始化 </span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); <span class="hljs-comment">//已被初始化</span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">beforeMount</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'------beforeMount挂载前状态------'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + (<span class="hljs-keyword">this</span>.$el)); <span class="hljs-comment">//已被初始化</span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-built_in">JSON</span>.stringify(<span class="hljs-keyword">this</span>.$data)); <span class="hljs-comment">//已被初始化  </span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); <span class="hljs-comment">//已被初始化  </span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">mounted</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'------mounted 挂载结束状态------'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el); <span class="hljs-comment">//已被初始化</span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el);    
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); <span class="hljs-comment">//已被初始化</span>
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); <span class="hljs-comment">//已被初始化 </span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">beforeUpdate</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'beforeUpdate 更新前状态===============》'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el);   
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); 
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); 
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">updated</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'updated 更新完成状态===============》'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el); 
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); 
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); 
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">beforeDestroy</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'beforeDestroy 销毁前状态===============》'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el);    
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); 
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message); 
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">destroyed</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.group(<span class="hljs-string">'destroyed 销毁完成状态===============》'</span>);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"el     : "</span> + <span class="hljs-keyword">this</span>.$el);
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.$el);  
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"data   : "</span> + <span class="hljs-keyword">this</span>.$data); 
+</div><div class="hljs-line">      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"%c%s"</span>, <span class="hljs-string">"color:red"</span>,<span class="hljs-string">"message: "</span> + <span class="hljs-keyword">this</span>.message)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  })
+</div></code></pre></div>

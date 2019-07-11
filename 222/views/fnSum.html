@@ -1,0 +1,86 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础function实战函数中arguments及任意数求和">基础：Function：实战：函数中arguments及任意数求和</h3>
+
+<p></p>
+
+<blockquote>
+  <ul><li><p><code>任意数求和</code>：不管函数执行的时候，传递多少实参值进来，我们都可以求和</p></li>
+  <li><p><code>形参有局限性</code>：我们需要具体的知道用户执行的时候传递实参数量、顺序等，才可以使用形参变量定义对应的入口</p></li>
+  <li><p><code>arguments</code>：函数内置的实参集合（内置：函数天生就存在的机制，不管你是否设置了形参，也不管你是否传递了实参，ARGUMENTS都有，始终存在）</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sum</span>(<span class="hljs-params">n, m</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">arguments</span>);
+</div><div class="hljs-line">    <span class="hljs-regexp">/!*</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     * ARG它是一个类数组(不是数组,不能直接使用数组中的方法)</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     * 即使设置形参变量,形参该是什么值还是什么值,但是ARG使用存储的是“所有”传递进来的实参，所以它被称为“实参集合”</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     * {</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *   0:10,</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *   1:20,</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *   length:2,</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *   callee:存储的是当前函数本身  arguments.callee===sum:true</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     * }</span>
+</div><div class="hljs-line"><span class="hljs-regexp">     *!/</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line">sum(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>);
+</div><div class="hljs-line">*<span class="hljs-regexp">/</span>
+</div><div class="hljs-line"><span class="hljs-regexp"></span>
+</div><div class="hljs-line"><span class="hljs-regexp">/</span>*
+</div><div class="hljs-line"> * 把ARG中存储的实参值依次遍历,每遍历一个都累加起来,最后实现任意数求和
+</div><div class="hljs-line"> *<span class="hljs-regexp">/</span>
+</div></code></pre>
+
+<ol start="1"><li rel="1"><p>基础版</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sum</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> total = <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> item = <span class="hljs-built_in">arguments</span>[i];<span class="hljs-comment">//=&gt;每一次遍历出来的实参值</span>
+</div><div class="hljs-line">        total += item;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> total;<span class="hljs-comment">//=&gt;把计算的结果返回</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(sum(<span class="hljs-number">10</span>));
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>升级版：在累加的时候，把字符串转换为数字，对于一些非有效数字，不在相加</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sum</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> total = <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">arguments</span>.length; i++) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> item = <span class="hljs-built_in">arguments</span>[i];<span class="hljs-comment">//=&gt;10 '20' 'AA'</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//1.不管ITEM获取的是传递的啥,都先转换为数字类型</span>
+</div><div class="hljs-line">        item = <span class="hljs-built_in">Number</span>(item);
+</div><div class="hljs-line">        <span class="hljs-comment">//2.如果当前的值是有效数字我们才累加,非有效数字直接跳过即可</span>
+</div><div class="hljs-line">        <span class="hljs-built_in">isNaN</span>(item) ? <span class="hljs-literal">null</span> : total += item;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> total;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(sum(<span class="hljs-number">10</span>, <span class="hljs-string">'20'</span>, <span class="hljs-string">'AA'</span>));<span class="hljs-comment">//=&gt;30</span>
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p>最终版</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> sum = <span class="hljs-function">(<span class="hljs-params">...arg</span>) =&gt;</span> <span class="hljs-built_in">eval</span>(arg.filter(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> !<span class="hljs-built_in">isNaN</span>(item)).join(<span class="hljs-string">'+'</span>));
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(sum(<span class="hljs-number">10</span>, <span class="hljs-string">'20'</span>, <span class="hljs-string">'AA'</span>, <span class="hljs-number">50</span>));
+</div></code></pre></div>

@@ -1,0 +1,127 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="深入nodebuffer">深入：Node：Buffer</h3>
+
+<p></p>
+
+
+
+<h4 id="一前言">一、前言：</h4>
+
+<blockquote>
+  <p>缓存；表现为16进制 <br>
+  ⚠️注意：不要用new</p>
+</blockquote>
+
+<ul><li><p>表现形式： <br>
+<code>utf8(三个字节)、gbk、gb2312(两个)</code> <br>
+<br></p></li>
+<li><p>知识点： <br>
+1b=8bit <br>
+二进制：11111111 -&gt; 255  最大 <br>
+八进制：377 <br>
+十六进制：ff <br>
+<br></p></li>
+<li><p>转换方法： <br>
+<code>from</code>：把字符转换成16进制 <br>
+<code>buffer.toString('base64')</code>：Buffer转为base64 <br>
+<code>parseInt('11111111',2)</code>：2进制转为为10进制 <br>
+<code>(255).toString(16)</code>：10进制转化为16进制／8进制／2进制</p></li>
+</ul>
+
+<blockquote>
+  <p>关于base64 <br>
+  一切能防止路径的地方，都可以使用base64；如<code>img.src background</code></p>
+</blockquote>
+
+
+
+<h4 id="二bufferfrom">二、Buffer.from</h4>
+
+<ul><li><p><code>0x</code>表示16进制</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">const</span> r=Buffer.from(<span class="hljs-string">'白'</span>);<span class="hljs-comment">//&lt;Buffer e7 99 bd&gt;</span>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log((<span class="hljs-number">0xe7</span>).toString(<span class="hljs-number">2</span>));
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log((<span class="hljs-number">0x99</span>).toString(<span class="hljs-number">2</span>));
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log((<span class="hljs-number">0xbd</span>).toString(<span class="hljs-number">2</span>));
+</div><div class="hljs-line"><span class="hljs-comment">//11100111</span>
+</div><div class="hljs-line"><span class="hljs-comment">//10011001</span>
+</div><div class="hljs-line"><span class="hljs-comment">//10111101</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> str = <span class="hljs-string">'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>;
+</div><div class="hljs-line">str+= str.toLowerCase();
+</div><div class="hljs-line">str += <span class="hljs-string">'0123456789+/'</span>;
+</div><div class="hljs-line"><span class="hljs-comment">// 加密的过程 md5  base64只是编码</span>
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(str[<span class="hljs-number">57</span>]+str[<span class="hljs-number">56</span>]+str[<span class="hljs-number">62</span>]+str[<span class="hljs-number">32</span>]); <span class="hljs-comment">// 理论上大1/3</span>
+</div></code></pre>
+
+
+
+<h4 id="三buffer的声明方式">三、Buffer的声明方式</h4>
+
+<ul><li><p><code>Buffer.from('大白')</code>：转成16进制，字符串 <br>
+⚠️注意：这里不能是数字格式</p></li>
+<li><p><code>Buffer.alloc(3)</code>：分配内存</p></li>
+<li><p><code>Buffer.from([255,255,255])</code>：转成16进制，数组</p></li>
+</ul>
+
+<p>⚠️注意：buffer一旦声明 就不能增加长度 copy + concat + split</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> buffer =  Buffer.from(<span class="hljs-string">'大白'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> buffer1 = Buffer.alloc(<span class="hljs-number">3</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> buffer2 = Buffer.from([<span class="hljs-number">255</span>,<span class="hljs-number">255</span>,<span class="hljs-number">255</span>]);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(buffer2);
+</div></code></pre>
+
+<p>copy方法：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">b1.copy(big,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>);
+</div><div class="hljs-line">b2.copy(big,<span class="hljs-number">3</span>,<span class="hljs-number">0</span>,<span class="hljs-number">3</span>);
+</div></code></pre>
+
+
+
+<h4 id="四思考">四、思考</h4>
+
+<p>😔思考：自己实现一个concat方法 <br>
+(自己写的)</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Function</span>.prototype.con=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">...arg</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//计算新的bufer内存，并且赋值内存</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> alloc=<span class="hljs-number">0</span>;
+</div><div class="hljs-line">    arg.forEach(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(item <span class="hljs-keyword">instanceof</span> Buffer){
+</div><div class="hljs-line">            alloc+=item.length;
+</div><div class="hljs-line">        }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'请传Buffer格式数据'</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    });
+</div><div class="hljs-line">    alloc=Buffer.alloc(alloc);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//用copy方法合并赋值</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> buf,len=<span class="hljs-number">0</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;arg.length;i++){
+</div><div class="hljs-line">        <span class="hljs-keyword">const</span> curBuf=arg[i];
+</div><div class="hljs-line">        curBuf.copy(alloc,len,<span class="hljs-number">0</span>,curBuf.length);
+</div><div class="hljs-line">        len=curBuf.length;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> alloc;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> a=Buffer.from(<span class="hljs-string">'大'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> b=Buffer.from(<span class="hljs-string">'白'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> res=Buffer.con(a,<span class="hljs-string">'wer'</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(res.toString());
+</div></code></pre></div>

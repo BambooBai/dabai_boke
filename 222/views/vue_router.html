@@ -1,0 +1,256 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuerouter">Vue：Router</h3>
+
+<p></p>
+
+<blockquote>
+  <p>中文官网：<a href="https://router.vuejs.org/zh/" target="_blank">https://router.vuejs.org/zh/</a></p>
+  
+  <p>安装：<code>npm install vue-router</code> <br>
+  install 方法中注册两个全局组件：</p>
+  
+  <ul><li><p><code>router-link</code></p></li>
+  <li><p><code>router-view</code></p></li>
+  </ul>
+  
+  <p>会在每个组件上定义两属性 <code>$router</code>  <code>$route</code> 使用：<code>this.$router、 this.$route</code></p>
+  
+  <ul><li><p><code>$router</code> 存放路由方法</p></li>
+  <li><p><code>$route</code> 存放路由属性</p></li>
+  </ul>
+</blockquote>
+
+
+
+<h4 id="一注册路由并配置">一、注册路由并配置</h4>
+
+<ol start="1"><li rel="1"><p>入口main.js</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> router <span class="hljs-keyword">from</span> <span class="hljs-string">'./router'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">new</span> Vue({
+</div><div class="hljs-line">  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-params">h</span> =&gt;</span> h(App),
+</div><div class="hljs-line">  router  <span class="hljs-comment">//这里</span>
+</div><div class="hljs-line">}).$mount(<span class="hljs-string">'#app'</span>)
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>创建router文件夹</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">'vue'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> VueRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'vue-router'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> routes <span class="hljs-keyword">from</span> <span class="hljs-string">'./routes'</span>  <span class="hljs-comment">//存放映射表</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">Vue.use(VueRouter)<span class="hljs-comment">//第三方插件引入后，要使用Vue.use()</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">new</span> VueRouter({
+</div><div class="hljs-line">    <span class="hljs-attr">mode</span>:<span class="hljs-string">'hash'</span>,
+</div><div class="hljs-line">    routes
+</div><div class="hljs-line">})
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p>路由Routers配置</p></li>
+</ol>
+
+<blockquote>
+  <p>分为3种路由：</p>
+  
+  <ul><li><p>一个路由多个视图，根据属性名匹配（很少使用）</p></li>
+  <li><p>单路由，单视图</p></li>
+  <li><p>二级路由，子路由<code>children</code>数组（注意：如果有二级路由，link必须路径匹配）</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> Center <span class="hljs-keyword">from</span> <span class="hljs-string">'_v/center'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> Version <span class="hljs-keyword">from</span> <span class="hljs-string">'_v/version'</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//默认情况下，只有首页默认显示，其他点击时才加载组件;</span>
+</div><div class="hljs-line"><span class="hljs-comment">//优点：性能高：()=&gt;import()</span>
+</div><div class="hljs-line"><span class="hljs-comment">//缺点：懒加载可能导致白屏</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> [
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'/'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">redirect</span>:{<span class="hljs-attr">path</span>:<span class="hljs-string">'/center'</span>}  <span class="hljs-comment">//默认地址，路径</span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'/center'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'center'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">components</span>:{
+</div><div class="hljs-line">            <span class="hljs-attr">default</span>:Center,
+</div><div class="hljs-line">            <span class="hljs-attr">version</span>:Version    <span class="hljs-comment">//添加多个试图，根据属性名匹配</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-comment">// component:Center</span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'/dan'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'dan'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/dan.vue'</span>),
+</div><div class="hljs-line">        <span class="hljs-attr">meta</span>:{<span class="hljs-attr">needLogin</span>:<span class="hljs-literal">true</span>}   <span class="hljs-comment">//路由元信息;验证登录</span>
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'/login'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'login'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/login.vue'</span>)
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'/message'</span>,  
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'message'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/message.vue'</span>),
+</div><div class="hljs-line">        <span class="hljs-attr">children</span>:[         <span class="hljs-comment">//二级路由，注意，有二级路由时，在app.vue中：使用path跳转</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//  &lt;router-link :to="{path:'/message'}"&gt;消息中心&lt;/router-link&gt;</span>
+</div><div class="hljs-line">            {
+</div><div class="hljs-line">                <span class="hljs-attr">path</span>:<span class="hljs-string">''</span>,<span class="hljs-comment">//路径默认不能加/</span>
+</div><div class="hljs-line">                redirect:{<span class="hljs-attr">name</span>:<span class="hljs-string">'one'</span>}
+</div><div class="hljs-line">            },
+</div><div class="hljs-line">            {
+</div><div class="hljs-line">                <span class="hljs-attr">name</span>:<span class="hljs-string">'one'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">path</span>:<span class="hljs-string">'one'</span>,<span class="hljs-comment">//路径默认不能加/</span>
+</div><div class="hljs-line">                component:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/message/one.vue'</span>)
+</div><div class="hljs-line">            },
+</div><div class="hljs-line">            {
+</div><div class="hljs-line">                <span class="hljs-attr">path</span>:<span class="hljs-string">'two'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">name</span>:<span class="hljs-string">'two'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/message/two.vue'</span>)
+</div><div class="hljs-line">            },{
+</div><div class="hljs-line">                <span class="hljs-attr">path</span>:<span class="hljs-string">'three/:id'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">name</span>:<span class="hljs-string">'three'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/message/three.vue'</span>),
+</div><div class="hljs-line">                beforeEnter(to,<span class="hljs-keyword">from</span>,next){  <span class="hljs-comment">//进入此路由调用的钩子</span>
+</div><div class="hljs-line">                    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'xxxx'</span>);
+</div><div class="hljs-line">                    next();
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">         ]
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'myone'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'myone'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/my/one.vue'</span>)
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'mytwo'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">name</span>:<span class="hljs-string">'mytwo'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/my/two.vue'</span>)
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    {
+</div><div class="hljs-line">        <span class="hljs-attr">path</span>:<span class="hljs-string">'*'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">component</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span><span class="hljs-keyword">import</span>(<span class="hljs-string">'_v/404.vue'</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">]
+</div></code></pre>
+
+
+
+<h4 id="二路由跳转">二、路由跳转</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">router-link</span> <span class="hljs-attr">:to</span>=<span class="hljs-string">"{name:'dan'}"</span>&gt;</span>订单管理<span class="hljs-tag">&lt;/<span class="hljs-name">router-link</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-comment">&lt;!--如果有二级路由则必须path匹配 --&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">router-link</span> <span class="hljs-attr">:to</span>=<span class="hljs-string">"{path:'/message'}"</span>&gt;</span>消息中心<span class="hljs-tag">&lt;/<span class="hljs-name">router-link</span>&gt;</span></span>
+</div></code></pre>
+
+<p>别忘了加<code>&lt;router-view&gt;&lt;/router-view&gt;</code>显示路由中的内容哦！！！</p>
+
+
+
+<h4 id="三路由参数">三、路由参数</h4>
+
+<blockquote>
+  <p><code>问号参数</code>、<code>路由参数</code>两种方式传参</p>
+</blockquote>
+
+<ol><li rel="1"><p>问号传参</p>
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">router-link</span> <span class="hljs-attr">:to</span>=<span class="hljs-string">"{path:`/message/three?id=2`}"</span>&gt;</span>详情<span class="hljs-tag">&lt;/<span class="hljs-name">router-link</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-comment">&lt;!--详情页接收--&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   问号传参为： </span><span class="hljs-template-variable">{{this.$route.query&amp;&amp;this.$route.query.id}}</span><span class="xml"></span>
+</div></code></pre></li>
+<li rel="2"><p>路由参数 <br>
+router.js配置：</p>
+
+<p><img longdesc="./1562231416774.png" alt="Alt text" title="" type="image/png" class="" src="data:image/png;base64,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"></p>
+
+<p><br></p>
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">router-link</span> <span class="hljs-attr">:to</span>=<span class="hljs-string">"{path:`/message/three/2`}"</span>&gt;</span>详情<span class="hljs-tag">&lt;/<span class="hljs-name">router-link</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-comment">&lt;!--详情页接收--&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>路由匹配传参为： </span><span class="hljs-template-variable">{{this.$route.params&amp;&amp;this.$route.params.id}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+</div></code></pre></li>
+</ol>
+
+
+
+<h4 id="四路由钩子函数">四、路由钩子函数</h4>
+
+<blockquote>
+  <p><strong><code>当组件切换时：</code></strong></p>
+  
+  <ul><li><p>会触发离开的钩子 <code>beforeRouteLeave</code>（里面没有<code>this</code>）</p></li>
+  <li><p>如果进入到新的页面 <code>beforeEach</code>(全局)</p></li>
+  <li><p><code>beforeEnter</code> 进到路由的配置中(全局)</p></li>
+  <li><p><code>beforeRouteEnter</code> 组件进入时的钩子</p></li>
+  <li><p>解析完成 <code>beforeResolve</code>(全局)</p></li>
+  <li><p><code>afterEach</code> 当前进入完毕（全局）</p></li>
+  <li><p>当属性变化时 并没有重新加载组件 会触发<code>beforeRouteUpdate</code>方法</p></li>
+  <li><p>组件渲染完成后 会调用当前<code>beforeRouteEnter</code>回调方法</p></li>
+  </ul>
+</blockquote>
+
+
+
+<h4 id="五小拓展">五、小拓展</h4>
+
+<ol start="1"><li rel="1"><p><code>$route</code>：可以通过监控$route 实现加载数据 <br>
+在app.vue导航中，匹配导航选中样式，发现给默认值赋值：<code>this.$route.name</code>，无值； <br>
+解决办法：</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> watch:{
+</div><div class="hljs-line">      $route(){
+</div><div class="hljs-line">          <span class="hljs-keyword">this</span>.activeIndex2=<span class="hljs-keyword">this</span>.$route.fullPath.split(<span class="hljs-string">'/'</span>)[<span class="hljs-number">1</span>];
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">    },
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p><code>beforeEach</code>  登录验证，全局设置</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">//routes.js 配置</span>
+</div><div class="hljs-line"><span class="hljs-comment">// meta:{needLogin:true}</span>
+</div><div class="hljs-line"><span class="hljs-comment">//main.js</span>
+</div><div class="hljs-line">router.beforeEach(<span class="hljs-function">(<span class="hljs-params">to,<span class="hljs-keyword">from</span> ,next</span>)=&gt;</span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> needLogin = to.matched &amp;&amp; to.matched.some(<span class="hljs-function">(<span class="hljs-params">{meta}</span>)=&gt;</span>{
+</div><div class="hljs-line">   <span class="hljs-keyword">return</span> meta &amp;&amp; meta.needLogin
+</div><div class="hljs-line">  });
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> isLogin = localStorage.getItem(<span class="hljs-string">'login'</span>);<span class="hljs-comment">//这里可以直接在浏览器中添加</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">if</span>(needLogin){
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(isLogin){
+</div><div class="hljs-line">      next();
+</div><div class="hljs-line">    }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">      next({<span class="hljs-attr">name</span>:<span class="hljs-string">'login'</span>});
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">    <span class="hljs-comment">// 如果不需要登录 并且是登录页面</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(!(to.name == <span class="hljs-string">'login'</span> &amp;&amp; isLogin)){
+</div><div class="hljs-line">      next();
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">})
+</div></code></pre></div>

@@ -1,0 +1,105 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h4 id="基础math实战生成一个四位随机验证码">基础：Math：实战：生成一个四位随机验证码</h4>
+
+<p></p>
+
+<blockquote>
+  <p><strong>分析：</strong> <br>
+  数字+字母 （简单） <br>
+  找图片 <br>
+  滑动拼图 <br>
+  问答类 <br>
+  点击汉字拼成语 <br>
+  把倒着的文字或者图片正过来 <br>
+  …</p>
+</blockquote>
+
+<p><strong>版本一、</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> codeBox = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'codeBox'</span>),
+</div><div class="hljs-line">    link = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'link'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;编写一个获取四位随机验证码的方法</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">queryCode</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//1.准备验证码获取的范围（索引：0~61）</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> codeArea = <span class="hljs-string">'qwertyuiopasdfghjklzxcvbnm'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'QWERTYUIOPASDFGHJKLZXCVBNM'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'1234567890'</span>;
+</div><div class="hljs-line">    <span class="hljs-comment">//2.我们只需要准备四个索引,即可在CODE-AREA中通过CHAR-AT方法获取到四个字符,把四个字符串拼接成一个字符串就是我们的验证码</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> result = <span class="hljs-string">''</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; i++) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> n = <span class="hljs-built_in">Math</span>.round(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">61</span>),<span class="hljs-comment">//=&gt;*(61-0)+0</span>
+</div><div class="hljs-line">            char = codeArea.charAt(n);
+</div><div class="hljs-line">        result += char;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> result;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;开始加载页面（和点击LINK）需要生成一个验证码</span>
+</div><div class="hljs-line">codeBox.innerHTML = queryCode();<span class="hljs-comment">//=&gt;执行方法,把RETURN返回的四位验证码插入到CODE-BOX盒子中</span>
+</div><div class="hljs-line">link.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    codeBox.innerHTML = queryCode();
+</div><div class="hljs-line">};
+</div></code></pre>
+
+<p><strong>版本二：</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> codeBox = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'codeBox'</span>),
+</div><div class="hljs-line">    link = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'link'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">queryCode</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> codeArea = <span class="hljs-string">'qwertyuiopasdfghjklzxcvbnm'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'QWERTYUIOPASDFGHJKLZXCVBNM'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'1234567890'</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> result = <span class="hljs-string">''</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">1</span>; i &lt;= <span class="hljs-number">4</span>; i++) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> n = <span class="hljs-built_in">Math</span>.round(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">61</span>),
+</div><div class="hljs-line">            char = codeArea.charAt(n);
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;生成四个不重复的</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;CHAR当前本次循环找到的字符,这个字符不一定是我们想要的,如果已经在RESULT中存在了,不要这个字符了,重新找</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (result.indexOf(char) &gt; <span class="hljs-number">-1</span>) {
+</div><div class="hljs-line">            i--;
+</div><div class="hljs-line">            <span class="hljs-keyword">continue</span>;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        result += char;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> result;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><strong>版本三：</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> codeBox = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'codeBox'</span>),
+</div><div class="hljs-line">    link = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'link'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">queryCode</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> codeArea = <span class="hljs-string">'qwertyuiopasdfghjklzxcvbnm'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'QWERTYUIOPASDFGHJKLZXCVBNM'</span> +
+</div><div class="hljs-line">        <span class="hljs-string">'1234567890'</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> result = <span class="hljs-string">''</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">while</span> (result.length &lt; <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> n = <span class="hljs-built_in">Math</span>.round(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">61</span>),
+</div><div class="hljs-line">            char = codeArea.charAt(n);
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (result.indexOf(char) === <span class="hljs-number">-1</span>) {
+</div><div class="hljs-line">            result += char;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> result;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">codeBox.innerHTML = queryCode();
+</div><div class="hljs-line">link.onclick = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">    codeBox.innerHTML = queryCode();
+</div><div class="hljs-line">};
+</div></code></pre></div>

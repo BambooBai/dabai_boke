@@ -1,0 +1,105 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuemethodcomputedwatch">Vue：method、Computed、Watch</h3>
+
+<p></p>
+
+
+
+<h4 id="一computed">一、Computed</h4>
+
+<p>计算方法，返回计算值 <br>
+<code>优点</code>：get方法，有缓存，如果值没有更改会从缓存中取值 <br>
+<code>缺点</code>：计算单一，如果有其他操作，比如，1秒后再返回值，不好进行操作。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">computed:{ <span class="hljs-comment">// Object.defineProperty来实现</span>
+</div><div class="hljs-line"> fullName(){ <span class="hljs-comment">// get方法,有缓存 如果值没有更改会从缓存中取值</span>
+</div><div class="hljs-line">       <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName + <span class="hljs-keyword">this</span>.lastName
+</div><div class="hljs-line">   }
+</div><div class="hljs-line">},
+</div></code></pre>
+
+<blockquote>
+  <p><code>需求</code>：写一个全选和取消全选</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-htmlbars hljs"><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"checkbox"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">""</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">'checkboxAll'</span>&gt;</span>全选</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"checkbox"</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">"item in checkboxs"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">""</span>  <span class="hljs-attr">v-model</span>=<span class="hljs-string">'item.value'</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+</div><div class="hljs-line"><span class="xml">computed:{</span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-attr">checkboxAll</span>:{</span>
+</div><div class="hljs-line"><span class="xml">        get(){</span>
+</div><div class="hljs-line"><span class="xml">            <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.checkboxs.every(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>item.value);</span>
+</div><div class="hljs-line"><span class="xml">        },</span>
+</div><div class="hljs-line"><span class="xml">        set(value){</span>
+</div><div class="hljs-line"><span class="xml">            <span class="hljs-keyword">this</span>.checkboxs.forEach(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>item.value=value)</span>
+</div><div class="hljs-line"><span class="xml">        }</span>
+</div><div class="hljs-line"><span class="xml">    }</span>
+</div><div class="hljs-line"><span class="xml">},</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div></code></pre>
+
+
+
+<h4 id="二method">二、Method</h4>
+
+<p>方法 <br>
+<code>与Computed相比较：没有缓存</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">methods:{
+</div><div class="hljs-line">    getName(){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.firstName+<span class="hljs-keyword">this</span>.lastName
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">},
+</div></code></pre>
+
+
+
+<h4 id="三watch">三、Watch</h4>
+
+<ul><li><p><code>immediate</code>立即执行</p></li>
+</ul>
+
+<blockquote>
+  <p>computed 和 watch 区别  </p>
+  
+  <ul><li><p><code>watch可以支持异步</code></p></li>
+  <li><p><code>实现一些简单的功能 会先去想能不能用计算属性实现</code></p></li>
+  </ul>
+  
+  <p>和methods的区别</p>
+  
+  <ul><li><p>没有关系，watch是监控数据的，methods只是一个方法</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">watch:{
+</div><div class="hljs-line">    <span class="hljs-comment">// firstName(){</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//  this.getName();</span>
+</div><div class="hljs-line">    <span class="hljs-comment">// },</span>
+</div><div class="hljs-line">  firstName:{
+</div><div class="hljs-line">              handler(newValue){
+</div><div class="hljs-line">                  setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">                      <span class="hljs-keyword">this</span>.getName();
+</div><div class="hljs-line">                  },<span class="hljs-number">1000</span>)
+</div><div class="hljs-line">              },
+</div><div class="hljs-line">              <span class="hljs-attr">immediate</span>:<span class="hljs-literal">true</span> <span class="hljs-comment">// deep:true</span>
+</div><div class="hljs-line">          },
+</div><div class="hljs-line">    lastName(){
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.getName();
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div></code></pre></div>

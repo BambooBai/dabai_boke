@@ -1,0 +1,176 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础dom节点node">基础：DOM：节点（node）</h3>
+
+<p></p>
+
+<blockquote>
+  <p>在一个HTML文档中出现的所有东西都是节点</p>
+  
+  <ul><li><p>元素节点（HTML标签）</p></li>
+  <li><p>文本节点（文字内容）</p></li>
+  <li><p>注释节点（注释内容）</p></li>
+  <li><p>文档节点（document）</p></li>
+  <li><p>…</p></li>
+  </ul>
+</blockquote>
+
+<p>每一种类型的节点都会有一些属性区分自己的特性和特征</p>
+
+<ul><li><p>nodeType：节点类型</p></li>
+<li><p>nodeName：节点名称</p></li>
+<li><p>nodeValue：节点值</p></li>
+</ul>
+
+<p><code>元素节点</code> <br>
+nodeType：1 <br>
+nodeName：大写标签名 <br>
+nodeValue：null</p>
+
+<p><code>文本节点</code> <br>
+nodeType：3 <br>
+nodeName：’#text’ <br>
+nodeValue：文本内容</p>
+
+<p>在标准浏览器中会把空格/换行等都当做文本节点处理</p>
+
+<p><code>注释节点</code> <br>
+nodeType：8 <br>
+nodeName：’#comment’ <br>
+nodeValue：注释内容</p>
+
+<p><code>文档节点</code> <br>
+nodeType：9 <br>
+nodeName：’#document’ <br>
+nodeValue：null</p>
+
+
+
+<h4 id="一-描述节点之间关系的属性">一、 描述节点之间关系的属性</h4>
+
+<p><strong><code>parentNode</code></strong></p>
+
+<blockquote>
+  <p>获取当前节点唯一的父亲节点</p>
+</blockquote>
+
+<p><strong><code>childNodes</code></strong></p>
+
+<blockquote>
+  <p>获取当前元素的所有子节点</p>
+  
+  <ul><li><p>子节点：只获取儿子级别的</p></li>
+  <li><p>所有：包含元素节点、文本节点等</p></li>
+  </ul>
+</blockquote>
+
+<p><strong><code>children</code></strong></p>
+
+<blockquote>
+  <p>获取当前元素所有的元素子节点</p>
+  
+  <p>在IE6~8中会把注释节点也当做元素节点获取到，所以兼容性不好</p>
+</blockquote>
+
+<p><strong><code>previousSibling</code></strong></p>
+
+<blockquote>
+  <p>获取当前节点的上一个哥哥节点（获取的哥哥可能是元素也可能是文本等）</p>
+  
+  <p>previousElementSibling：获取上一个哥哥元素节点（不兼容IE6~8）</p>
+</blockquote>
+
+<p><strong><code>nextSibling</code></strong></p>
+
+<blockquote>
+  <p>获取当前节点的下一个弟弟节点 </p>
+  
+  <p>nextElementSibling：下一个弟弟元素节点（不兼容）</p>
+</blockquote>
+
+<p><strong><code>firstChild</code></strong></p>
+
+<blockquote>
+  <p>获取当前元素的第一个子节点（可能是元素或者文本等）</p>
+  
+  <p>firstElementChild</p>
+</blockquote>
+
+<p><strong><code>lastChild</code></strong></p>
+
+<blockquote>
+  <p>获取当前元素的最后一个子节点</p>
+  
+  <p>lastElementChild</p>
+</blockquote>
+
+<hr>
+
+<p>需求一：获取当前元素的所有元素子节点</p>
+
+<blockquote>
+  <p>基于children不兼容IE低版本浏览器（会把注释当做元素节点）</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * children：get all the element nodes of the current element</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * @parameter</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *    curEle：[object] current element</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * @return</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *    [Array] all the element nodes</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * by team on 2018/04/07 12:36</span>
+</div><div class="hljs-line"><span class="hljs-comment"> */</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">children</span>(<span class="hljs-params">curEle</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;首先获取当前元素下所有的子节点,然后遍历这些节点,筛选出元素的(NODE-TYPE===1),把筛选出来的结果单独存储起来即可</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> nodeList = curEle.childNodes,
+</div><div class="hljs-line">        result = [];
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; nodeList.length; i++) {
+</div><div class="hljs-line">        <span class="hljs-keyword">var</span> item = nodeList[i];
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (item.nodeType === <span class="hljs-number">1</span>) {
+</div><div class="hljs-line">            result.push(item);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> result;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(children(course));
+</div></code></pre>
+
+<p>需求二：获取当前元素的上一个哥哥元素节点</p>
+
+<blockquote>
+  <p>previousSibling：上一个哥哥节点 <br>
+  previousElementSibling：上一个哥哥元素节点，但是不兼容</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * prev：get the last elder brother element node of the current element</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * @parameter</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *    curEle：[object] current element</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * @return</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *    [object] last elder brother element</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * by team on 2018/04/07 12:44</span>
+</div><div class="hljs-line"><span class="hljs-comment"> */</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">prev</span>(<span class="hljs-params">curEle</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;先找当前元素的哥哥节点,看是否为元素节点,不是的话,基于哥哥,找哥哥的上一个哥哥节点...一直到找到元素节点或者已经没有哥哥了(说明我就是老大)则结束查找</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> pre = curEle.previousSibling;
+</div><div class="hljs-line">    <span class="hljs-keyword">while</span> (pre &amp;&amp; pre.nodeType !== <span class="hljs-number">1</span>) {
+</div><div class="hljs-line">        <span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">         * pre &amp;&amp; pre.nodeType !== 1</span>
+</div><div class="hljs-line"><span class="hljs-comment">         *   pre是验证还有没有，这样写代表有，没有pre是null</span>
+</div><div class="hljs-line"><span class="hljs-comment">         *   pre.nodeType是验证是否为元素</span>
+</div><div class="hljs-line"><span class="hljs-comment">         */</span>
+</div><div class="hljs-line">        pre = pre.previousSibling;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> pre;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>扩展：next下一个弟弟元素节点，prevAll获取所有哥哥元素节点，nextAll获取所有弟弟元素节点，siblings获取所有兄弟元素节点，index获取当前元素的索引…</p></div>

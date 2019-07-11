@@ -1,0 +1,192 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuejwt">Vue：jwt</h3>
+
+<p></p>
+
+<blockquote>
+  <p>安装<code>npm install ivew axios jsonwebtoken</code>  </p>
+  
+  <ul><li><p>JWT(json web token)是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。</p></li>
+  <li><p>一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源。比如用在<code>用户登录</code>上。</p></li>
+  <li><p>因为数字签名的存在，这些信息是可信的，JWT可以使用HMAC算法或者是RSA的公私秘钥对进行签名</p></li>
+  </ul>
+  
+  <p>主要场景</p>
+  
+  <ul><li><p>身份认证在这种场景下，一旦用户完成了登陆，在接下来的每个请求中包含JWT，可以用来<code>验证用户身份以及对路由，服务和资源的访问权限进行验证。</code> <br>
+  信息交换在通信的双方之间使用JWT对数据进行编码是一种非常安全的方式，由于它的信息是经过签名的，可以<code>确保发送者发送的信息是没有经过伪造的</code></p></li>
+  </ul>
+  
+  <p>好处：不管有几个服务器还有服务器重启，都不需要考虑这个问题，因为通过token存到了客户端</p>
+  
+  <p>一个服务  多个进程  3000,30001  =》数据库中   集群 <br>
+  把用户的信息  存到客户端  每次客户端带上token  校验一下是否登录过 <br>
+  session  存到服务端</p>
+</blockquote>
+
+
+
+<h3 id="使用">使用</h3>
+
+<blockquote>
+  <p>使用过程：</p>
+  
+  <ul><li><p>在server.js文件中post请求’login’,查询是否有传值过来的用户名，如果有，返回带通过jwt生成的字符串属性为“token”返回到客户端</p></li>
+  <li><p>封装ajax请求，请求头带<code>Authorization</code>标记，值为token字符串</p></li>
+  <li><p>在main.js中<code>router.beforeEach</code>每次路由前都会请求后台验证token是否过期或者是否正确</p></li>
+  </ul>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>建立文件server.js(vue中直接就可以使用exporess)</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> express=<span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> app=express();
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> bodyParser=<span class="hljs-built_in">require</span>(<span class="hljs-string">'body-parser'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> jwt=<span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonwebtoken'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> miyao=<span class="hljs-string">'dabai'</span>;<span class="hljs-comment">//秘钥</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">app.use(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>)=&gt;</span>{
+</div><div class="hljs-line">    res.header(<span class="hljs-string">"Access-Control-Allow-Origin"</span>, <span class="hljs-string">"*"</span>);
+</div><div class="hljs-line">    res.header(<span class="hljs-string">"Access-Control-Allow-Headers"</span>, <span class="hljs-string">"Origin, X-Requested-With, Content-Type, Accept, Authorization"</span>);
+</div><div class="hljs-line">    res.header(<span class="hljs-string">"Access-Control-Allow-Methods"</span>,<span class="hljs-string">"PUT,POST,GET,DELETE,OPTIONS"</span>);
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.method.toLowerCase()===<span class="hljs-string">'options'</span>){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> res.end();
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    next();
+</div><div class="hljs-line">})
+</div><div class="hljs-line">app.use(bodyParser.json())
+</div><div class="hljs-line">app.get(<span class="hljs-string">'/user'</span>,(req,res)=&gt;{
+</div><div class="hljs-line">    res.json({<span class="hljs-attr">name</span>:<span class="hljs-string">'baibaibai'</span>});
+</div><div class="hljs-line">})
+</div><div class="hljs-line">app.post(<span class="hljs-string">'/login'</span>,(req,res)=&gt;{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> {username}=req.body;
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(username===<span class="hljs-string">'admin'</span>){
+</div><div class="hljs-line">        res.json({
+</div><div class="hljs-line">            <span class="hljs-attr">code</span>:<span class="hljs-number">0</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">username</span>:<span class="hljs-string">'admin'</span>,
+</div><div class="hljs-line">            <span class="hljs-comment">// 签名内容，签名秘钥，过期时间</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//把用户名通过服务端存到客户端（以前都是放到服务器上）</span>
+</div><div class="hljs-line">            token:jwt.sign({<span class="hljs-attr">username</span>:<span class="hljs-string">'admin'</span>},miyao,{
+</div><div class="hljs-line">                <span class="hljs-attr">expiresIn</span>:<span class="hljs-number">20</span><span class="hljs-comment">//过期时间秒</span>
+</div><div class="hljs-line">            })
+</div><div class="hljs-line">        })
+</div><div class="hljs-line">    }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">        res.json({
+</div><div class="hljs-line">            <span class="hljs-attr">code</span>:<span class="hljs-number">1</span>,
+</div><div class="hljs-line">            <span class="hljs-attr">data</span>:<span class="hljs-string">'用户名不存在'</span>
+</div><div class="hljs-line">        })
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">})
+</div><div class="hljs-line">app.get(<span class="hljs-string">'/validate'</span>,(req,res)=&gt;{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> token=req.headers.authorization;
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(token)
+</div><div class="hljs-line">    jwt.verify(token,miyao,(err,decode)=&gt;{
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(err){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> res.json({
+</div><div class="hljs-line">                <span class="hljs-attr">code</span>:<span class="hljs-number">1</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">data</span>:<span class="hljs-string">'token失效了'</span>
+</div><div class="hljs-line">            })
+</div><div class="hljs-line">        }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">            <span class="hljs-comment">//需要延长token时效</span>
+</div><div class="hljs-line">            res.json({
+</div><div class="hljs-line">                <span class="hljs-attr">username</span>:decode.username,
+</div><div class="hljs-line">                <span class="hljs-attr">code</span>:<span class="hljs-number">0</span>,
+</div><div class="hljs-line">                 <span class="hljs-attr">token</span>:jwt.sign({<span class="hljs-attr">username</span>:<span class="hljs-string">'admin'</span>},miyao,{
+</div><div class="hljs-line">                    <span class="hljs-attr">expiresIn</span>:<span class="hljs-number">20</span><span class="hljs-comment">//过期时间秒</span>
+</div><div class="hljs-line">                })
+</div><div class="hljs-line">            })
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    })
+</div><div class="hljs-line">})
+</div><div class="hljs-line">app.listen(<span class="hljs-number">3000</span>);
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>封装ajax请求</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">//ajaxRequest 获取</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">'axios'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'../store'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> { getLocal } <span class="hljs-keyword">from</span> <span class="hljs-string">'./local'</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//当第一次请求  显示loading   剩下的时候就不调用 了</span>
+</div><div class="hljs-line"><span class="hljs-comment">//当都请求完毕后  隐藏loading</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AjaxRequest</span></span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">constructor</span>(){
+</div><div class="hljs-line">        <span class="hljs-comment">//设置请求路径</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.baseURL=process.env.NODE_ENV===<span class="hljs-string">'production'</span>?<span class="hljs-string">'/'</span>:<span class="hljs-string">'http://localhost:3000'</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.timeout=<span class="hljs-number">3000</span>;<span class="hljs-comment">//超时时间</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.queue={};<span class="hljs-comment">//存放每次的请求;为了避免调用多次请求混乱</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    merge(options){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> {...options,<span class="hljs-attr">baseURL</span>:<span class="hljs-keyword">this</span>.baseURL,<span class="hljs-attr">timeout</span>:<span class="hljs-keyword">this</span>.timeout}
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    setInterceptor(instance,url){ 
+</div><div class="hljs-line">        <span class="hljs-comment">//请求拦截</span>
+</div><div class="hljs-line">        instance.interceptors.request.use(<span class="hljs-function"><span class="hljs-params">config</span>=&gt;</span>{
+</div><div class="hljs-line">            config.headers.Authorization=getLocal(<span class="hljs-string">'token'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>.queue).length===<span class="hljs-number">0</span>){
+</div><div class="hljs-line">                store.commit(<span class="hljs-string">'showLoading'</span>);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.queue[url]=url;
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> config;
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">        <span class="hljs-comment">//响应拦截</span>
+</div><div class="hljs-line">        <span class="hljs-comment">//如果上一个promise返回一个常量，会作为下一个promise的输入</span>
+</div><div class="hljs-line">        instance.interceptors.response.use(<span class="hljs-function"><span class="hljs-params">res</span>=&gt;</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">delete</span> <span class="hljs-keyword">this</span>.queue[url];  <span class="hljs-comment">//每次请求后，都删除队列中的路径</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>.queue).length===<span class="hljs-number">0</span>){
+</div><div class="hljs-line">                store.commit(<span class="hljs-string">'hideLoading'</span>);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> res.data;
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    request(options){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> instance=axios.create();<span class="hljs-comment">//通过axios库创建一个axios实例</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.setInterceptor(instance,options.url);
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> config=<span class="hljs-keyword">this</span>.merge(options);
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span>   instance(config);<span class="hljs-comment">//ajax执行后返回的是一个promise</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">new</span> AjaxRequest
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p>main.js</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">router.beforeEach(<span class="hljs-keyword">async</span> (to,<span class="hljs-keyword">from</span>,next)=&gt;{
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> isLogin=<span class="hljs-keyword">await</span> store.dispatch(<span class="hljs-string">'toValidate'</span>);
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> needLogin=to.matched.some(<span class="hljs-function"><span class="hljs-params">match</span>=&gt;</span>match.meta.needLogin);
+</div><div class="hljs-line">  <span class="hljs-keyword">if</span>(whiteList.includes[to.path]){<span class="hljs-comment">//在白名单中</span>
+</div><div class="hljs-line">    next();
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">if</span>(needLogin){
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(isLogin){
+</div><div class="hljs-line">        next();
+</div><div class="hljs-line">    }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">      next(<span class="hljs-string">'/login'</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(isLogin&amp;&amp;to.path.name===<span class="hljs-string">'login'</span>){
+</div><div class="hljs-line">      next(<span class="hljs-string">'/'</span>);
+</div><div class="hljs-line">    }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">      next();
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">})
+</div></code></pre></div>

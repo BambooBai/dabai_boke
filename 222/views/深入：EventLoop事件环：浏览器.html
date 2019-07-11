@@ -1,0 +1,115 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="深入eventloop事件环浏览器">深入：EventLoop事件环：浏览器</h3>
+
+<p></p>
+
+<blockquote>
+  <p>js 是单线程的，（这里的单线程是主线程） <code>ajax setTimeout</code> (它们也是开了一条线程，完成后在主线程中执行)<code>webworker（不支持操作dom，子线程只负责一些复杂的计算而已）</code> <br>
+  浏览器渲染的时候，有两个线程  js线程 ui线程 <br>
+  一些语言中都会有多线程的概念，<code>锁的概念</code> <br>
+  进程：计算机分配任务的最小单位，一般一个进程汇总包含着线程 <br>
+  为了代码执行的可靠性，一般我们会使用多进程 一个进程挂了，还有其他进程活着 <br>
+  cpu分为多少核 4 ，默认启用一个应用只会占用一个核（多进程也是为了充分利用cpu）</p>
+</blockquote>
+
+
+
+<h4 id="一事件环">一、事件环</h4>
+
+<ul><li><p>队列：先进的先出 push shift</p></li>
+<li><p>栈：代码执行的时候就是栈 先进后出</p></li>
+</ul>
+
+
+
+<h4 id="二执行事件环的时候">二、执行事件环的时候</h4>
+
+<ul><li><p>主栈</p></li>
+<li><p>callback queue队列（宏任务）一般是在微任务之前执行</p></li>
+<li><p>微任务</p></li>
+<li><p>总结：浏览中的事件环，会先执行主栈中的代码，执行后会清空微任务队列-&gt;取一个宏任务执行-&gt;在取清空微任务-&gt;在取取第二个。（浏览器内部会自己扫描队列中的（会开一个线程））</p></li>
+</ul>
+
+
+
+<h4 id="三宏任务微任务有哪些">三、宏任务&amp;微任务有哪些</h4>
+
+<p>nextTick原理:(内部判断)</p>
+
+<blockquote>
+  <p><code>microtask</code>：微任务：</p>
+  
+  <ul><li><p>Promise</p></li>
+  <li><p>MutationObserver（监视dom更改）</p></li>
+  <li><p>MessageChannel (目前vue已移除)(消息通道)</p></li>
+  <li><p>(nextTick) <a href="https://github.com/vuejs/vue/blob/dev/src/core/util/next-tick.js" target="_blank">vue:next-tick.js</a></p></li>
+  </ul>
+  
+  <p><code>macrotask</code>：宏任务：</p>
+  
+  <ul><li><p>setImmediate（IE下才存在）(Node也有)（比setTimeout都慢）</p></li>
+  <li><p>setTimeout</p></li>
+  </ul>
+</blockquote>
+
+<ol start="1"><li rel="1"><p><code>MutationObserver：</code> <br>
+监视DOM更改 <br>
+<a href="http://javascript.ruanyifeng.com/dom/mutationobserver.html" target="_blank">参考资料地址链接</a></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">    setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'定时器'</span>)},<span class="hljs-number">0</span>);
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> box=<span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'main'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> observer=<span class="hljs-keyword">new</span> MutationObserver(<span class="hljs-function">(<span class="hljs-params">mutations</span>)=&gt;</span>{<span class="hljs-built_in">console</span>.log(mutations.length)});
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> options = {
+</div><div class="hljs-line">      <span class="hljs-string">'childList'</span>: <span class="hljs-literal">true</span>,
+</div><div class="hljs-line">      <span class="hljs-string">'attributes'</span>:<span class="hljs-literal">true</span>
+</div><div class="hljs-line">    } ;
+</div><div class="hljs-line">    observer.observe(box,options);
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">100</span>;i++){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> node=<span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'p'</span>);
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> text=<span class="hljs-built_in">document</span>.createTextNode(<span class="hljs-string">'haha'</span>);
+</div><div class="hljs-line">        node.appendChild(text);
+</div><div class="hljs-line">        box.appendChild(node);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'haha'</span>)
+</div><div class="hljs-line">     <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>;i&lt;<span class="hljs-number">100</span>;i++){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> node=<span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">'p'</span>);
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> text=<span class="hljs-built_in">document</span>.createTextNode(<span class="hljs-string">'haha'</span>);
+</div><div class="hljs-line">        node.appendChild(text);
+</div><div class="hljs-line">        box.appendChild(node);
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p><code>MessageChannel</code> <br>
+消息通道（目前vue已移除）</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> channel=<span class="hljs-keyword">new</span> MessageChannel();
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> port1=channel.port1;
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> port2=channel.port2;
+</div><div class="hljs-line">port2.postMessage(<span class="hljs-string">'halou'</span>)
+</div><div class="hljs-line">setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'定时器'</span>); 
+</div><div class="hljs-line">},<span class="hljs-number">0</span>)
+</div><div class="hljs-line">port1.onmessage=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(e.data);
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><a href="https://juejin.im/post/5c2ec3b66fb9a049eb3c1012" target="_blank">js线程-掘金资料</a></p>
+
+<blockquote>
+  <ol><li rel="1"><p>查询vue中next-tick的源码</p></li>
+  <li rel="2"><p>找相关类型以及async await相关的题</p></li>
+  </ol>
+</blockquote></div>

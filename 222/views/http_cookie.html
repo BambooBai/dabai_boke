@@ -1,0 +1,187 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="httpcookie">HTTP：Cookie</h3>
+
+<p></p>
+
+
+
+<h4 id="一cookie">一、cookie</h4>
+
+<blockquote>
+  <p><strong>特点</strong>：以分号空格分割；domain默认只针对某个域名； <br>
+  <strong>读取cookie：</strong></p>
+  
+  <ul><li><p>浏览器:<code>document.cookie</code></p></li>
+  <li><p>node：<code>querystring.parse(req.headers.cookie,'; ')</code></p></li>
+  </ul>
+  
+  <p><strong>写入cookie：</strong></p>
+  
+  <ul><li><p>node：<code>res.setHeader('Set-Cookie',['name=dabai',age='30'])</code> <br>
+  参数</p>
+  
+  <ul>
+  <li><p>domain ：默认只针对某个域名  .dabai.cn 表示a.dabai  b.dabai  .dabai 都可以共用cookie</p></li>
+  <li><p>path：一般都不会设置 可以起到 路径限制cookie</p></li>
+  <li><p>expires：绝对路径 <strong>expires=’+new Date(Date.now()+3000).toUTCString()</strong></p></li>
+  <li><p>max-age 相对时间  过期时间 5秒后 重新登录</p></li>
+  <li><p>httpOnly( 一般情况下服务端设置都是true)</p></li></ul></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> http=<span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> querystring=<span class="hljs-built_in">require</span>(<span class="hljs-string">'querystring'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">http.createServer(<span class="hljs-function">(<span class="hljs-params">req,res</span>)=&gt;</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/write/read'</span>){
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(req.headers);;
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie,<span class="hljs-string">'; '</span>)||{};
+</div><div class="hljs-line">        res.end(<span class="hljs-built_in">JSON</span>.stringify(cookies));
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/read'</span>){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie,<span class="hljs-string">'; '</span>)||{};
+</div><div class="hljs-line">        res.end(<span class="hljs-built_in">JSON</span>.stringify(cookies));
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/write'</span>){
+</div><div class="hljs-line">        res.setHeader(<span class="hljs-string">'Set-Cookie'</span>,<span class="hljs-string">'name=dabai; domain=localhost; path=/write; expires='</span>+<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(<span class="hljs-built_in">Date</span>.now()+<span class="hljs-number">3000</span>).toUTCString()+<span class="hljs-string">'; httpOnly=true'</span>);
+</div><div class="hljs-line">        res.end(<span class="hljs-string">'write ok'</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}).listen(<span class="hljs-number">3002</span>);
+</div></code></pre>
+
+<ul><li><p>封装set-cookie：</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> http=<span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> querystring=<span class="hljs-built_in">require</span>(<span class="hljs-string">'querystring'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">http.createServer(<span class="hljs-function">(<span class="hljs-params">req,res</span>)=&gt;</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> arr=[];
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setCookie</span>(<span class="hljs-params">key,value,options={}</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> optionsArr=[];
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(options.Maxage){
+</div><div class="hljs-line">            optionsArr.push(<span class="hljs-string">`Max-Age=<span class="hljs-subst">${options.Maxage}</span>`</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(options.Httponly){
+</div><div class="hljs-line">            optionsArr.push(<span class="hljs-string">`httpOnly=<span class="hljs-subst">${options.Httponly}</span>`</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(options.Path){
+</div><div class="hljs-line">            optionsArr.push(<span class="hljs-string">`path=<span class="hljs-subst">${options.Path}</span>`</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(options.Domain){
+</div><div class="hljs-line">            optionsArr.push(<span class="hljs-string">`domain=<span class="hljs-subst">${options.Domain}</span>`</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        arr.push(<span class="hljs-string">`<span class="hljs-subst">${key}</span>=<span class="hljs-subst">${value}</span>; `</span>+optionsArr.join(<span class="hljs-string">'; '</span>));
+</div><div class="hljs-line">        res.setHeader(<span class="hljs-string">'Set-Cookie'</span>,arr.join(<span class="hljs-string">'; '</span>))
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/write/read'</span>){
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(req.headers);;
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie,<span class="hljs-string">'; '</span>)||{};
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        res.end(<span class="hljs-built_in">JSON</span>.stringify(cookies));
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/read'</span>){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie,<span class="hljs-string">'; '</span>)||{};
+</div><div class="hljs-line">        res.end(<span class="hljs-built_in">JSON</span>.stringify(cookies));
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(req.url===<span class="hljs-string">'/write'</span>){
+</div><div class="hljs-line">        <span class="hljs-comment">// res.setHeader('Set-Cookie','name=dabai; domain=localhost; path=/write; expires='+new Date(Date.now()+3000).toUTCString()+'; httpOnly=true');</span>
+</div><div class="hljs-line">        setCookie(<span class="hljs-string">'name'</span>,<span class="hljs-string">'dabai'</span>,{<span class="hljs-attr">Httponly</span>:<span class="hljs-literal">true</span>,<span class="hljs-attr">Maxage</span>:<span class="hljs-number">20</span>});
+</div><div class="hljs-line">        res.end(<span class="hljs-string">'write ok'</span>);
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+<ul><li><p>getCookie的封装</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCookie</span>(<span class="hljs-params">key</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie)||{};
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> cookies[key]||<span class="hljs-string">'not found'</span>;
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+
+
+<h4 id="二带签名的cookie">二、带签名的cookie</h4>
+
+<blockquote>
+  <p><strong>目前存在的问题：</strong> <br>
+  客户端通过f12还可以改变cookie，虽然已经写了httpOnly <br>
+  <code>解决</code>：用签名 <br>
+  就是给cookie标个记号，下次你带上记号和内容就可以确认这个东西有没有更改 <br>
+  <code>crypto</code> 核心模块 <code>md5</code></p>
+</blockquote>
+
+<hr>
+
+<blockquote>
+  <p><strong>md5特点：</strong>(md5是摘要算法，并不是加密)</p>
+  
+  <ul><li><p>相同的内容  摘要后相同</p></li>
+  <li><p>不同的内容 摘要出的结果完全不同</p></li>
+  <li><p>长度相同</p></li>
+  <li><p>摘要后不能反过来</p></li>
+  <li><p>不安全：单纯的用md5 ，很多可以通过md5解密网站撞库的</p></li>
+  </ul>
+  
+  <p><strong>应用：</strong> <br>
+  <code>密码</code></p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> crypto=<span class="hljs-built_in">require</span>(<span class="hljs-string">'crypto'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> str=crypto.createHash(<span class="hljs-string">'md5'</span>).update(<span class="hljs-string">'12345'</span>).digest(<span class="hljs-string">'base64'</span>);
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(str);<span class="hljs-comment">//gnzLDuqKcGxMNKFokfhOew==</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//去md5解密是可以查到的；撞库</span>
+</div></code></pre>
+
+<blockquote>
+  <p>完美解决： <br>
+  <code>加盐算法</code></p>
+</blockquote>
+
+<ul><li><p>生成带签名的cookie的value</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">    <span class="hljs-keyword">let</span> sign=<span class="hljs-function"><span class="hljs-params">value</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> crypto.createHmac(<span class="hljs-string">'sha256'</span>,<span class="hljs-string">'dabai'</span>).update(value.toString()).digest(<span class="hljs-string">'base64'</span>).replace(<span class="hljs-regexp">/[+/]/g</span>,<span class="hljs-string">''</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-comment">//setCookie中添加</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(options.Signed){<span class="hljs-comment">// 要给内容签名</span>
+</div><div class="hljs-line">        value=<span class="hljs-string">`<span class="hljs-subst">${value}</span>.<span class="hljs-subst">${sign(value)}</span>`</span>;
+</div><div class="hljs-line">    }
+</div></code></pre>
+
+<ul><li><p>获取带签名的cookie</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">res.getSignCookie=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">key</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> cookies=querystring.parse(req.headers.cookie)||{};
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(cookies[key]){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> [value,signValue]=cookies[key].split(<span class="hljs-string">'.'</span>);
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(sign(value)===signValue){
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(value);
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> value;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>;
+</div><div class="hljs-line">}
+</div></code></pre></div>

@@ -1,0 +1,228 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="reactroute-原理">React：Route 原理</h3>
+
+<p></p>
+
+<p>需求：自己实现一个react-router-dom</p>
+
+<ol start="1"><li rel="1"><p>react-router-dom  <code>index.js</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> HashRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'./HashRouter'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> Route <span class="hljs-keyword">from</span> <span class="hljs-string">'./Route'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> Link <span class="hljs-keyword">from</span> <span class="hljs-string">'./Link'</span>; 
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> Switch <span class="hljs-keyword">from</span> <span class="hljs-string">'./Switch'</span>; 
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> withRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'./withRouter'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> Redirect <span class="hljs-keyword">from</span> <span class="hljs-string">'./Redirect'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> {
+</div><div class="hljs-line">  HashRouter,
+</div><div class="hljs-line">  Route,
+</div><div class="hljs-line">  Link,
+</div><div class="hljs-line">  Switch,
+</div><div class="hljs-line">  withRouter,
+</div><div class="hljs-line">  Redirect
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>react-router-dom <code>hashrouter</code></p></li>
+</ol>
+
+<blockquote>
+  <p>思路：</p>
+  
+  <ol><li rel="1"><p>主要用到了父孙传值的<code>context</code></p></li>
+  <li rel="2"><p>在hashRouter中需要提供<code>history、location、match</code></p></li>
+  <li rel="3"><p>hash发生变化的事件：<code>hashchange</code></p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> React,{Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> {Provider} <span class="hljs-keyword">from</span> <span class="hljs-string">'./context'</span>;
+</div><div class="hljs-line"><span class="hljs-comment">// 在hashRouter中需要提供 history location match</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HashRouter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span></span>{
+</div><div class="hljs-line">   state = {
+</div><div class="hljs-line">     <span class="hljs-attr">location</span>:{ <span class="hljs-comment">// /xxx</span>
+</div><div class="hljs-line">       pathname: <span class="hljs-built_in">window</span>.location.hash ? <span class="hljs-built_in">window</span>.location.hash.slice(<span class="hljs-number">1</span>):<span class="hljs-string">'/'</span>
+</div><div class="hljs-line">     }
+</div><div class="hljs-line">   }
+</div><div class="hljs-line">   componentDidMount(){
+</div><div class="hljs-line">    <span class="hljs-comment">// 默认情况下应该记录一个属性 专门用来存放当前路径的</span>
+</div><div class="hljs-line">     <span class="hljs-built_in">window</span>.location.hash = <span class="hljs-built_in">window</span>.location.hash ? <span class="hljs-built_in">window</span>.location.hash.slice(<span class="hljs-number">1</span>): <span class="hljs-string">'/'</span>;
+</div><div class="hljs-line">     <span class="hljs-comment">// hash值发生变化 重新设置路径</span>
+</div><div class="hljs-line">     <span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'hashchange'</span>,()=&gt;{
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.setState({
+</div><div class="hljs-line">        <span class="hljs-attr">location</span>:{
+</div><div class="hljs-line">          ...this.state.location,
+</div><div class="hljs-line">          <span class="hljs-attr">pathname</span>: <span class="hljs-built_in">window</span>.location.hash ? <span class="hljs-built_in">window</span>.location.hash.slice(<span class="hljs-number">1</span>) : <span class="hljs-string">'/'</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">      });
+</div><div class="hljs-line">     });
+</div><div class="hljs-line">   }
+</div><div class="hljs-line">   render(){
+</div><div class="hljs-line">      <span class="hljs-keyword">let</span> value = {
+</div><div class="hljs-line">        ...this.state,
+</div><div class="hljs-line">        <span class="hljs-attr">history</span>:{
+</div><div class="hljs-line">          push(to){
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> to === <span class="hljs-string">'object'</span>){
+</div><div class="hljs-line">              <span class="hljs-built_in">window</span>.location.hash = to.pathname;
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">              <span class="hljs-built_in">window</span>.location.hash = to;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">          }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{value}</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">         {this.props.children}</span>
+</div><div class="hljs-line"><span class="xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>)
+</div><div class="hljs-line"> }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p>react-router-dom <code>route</code></p></li>
+</ol>
+
+<blockquote>
+  <ul><li><p>用到了父孙传值的<code>Consumer</code></p></li>
+  <li><p>用到了<code>path-to-regexp</code> 匹配search</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs scala"><div class="hljs-line"><span class="hljs-keyword">import</span> <span class="hljs-type">React</span>, { <span class="hljs-type">Component</span> } from <span class="hljs-symbol">'reac</span>t';
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> { <span class="hljs-type">Consumer</span>} from './context';
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> pathToRegExp from <span class="hljs-symbol">'path</span>-to-regexp';
+</div><div class="hljs-line">export <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Route</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">  render() {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> (&lt;<span class="hljs-type">Consumer</span>&gt;
+</div><div class="hljs-line">    {(value)=&gt;{
+</div><div class="hljs-line">        let {location:{pathname}} = value;
+</div><div class="hljs-line">        let props = {...value,<span class="hljs-keyword">match</span>:<span class="hljs-literal">null</span>};
+</div><div class="hljs-line">        let {path=<span class="hljs-string">"/"</span>,component:<span class="hljs-type">Component</span>,exact=<span class="hljs-literal">false</span>,render,children} = <span class="hljs-keyword">this</span>.props;
+</div><div class="hljs-line">        let keys = [];
+</div><div class="hljs-line">        let reg = pathToRegExp(path, keys, { end: exact});
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (reg.test(pathname)){
+</div><div class="hljs-line">          <span class="hljs-comment">// 如果匹配到后 需要看看由于没有路径参数 /user/detail/:id</span>
+</div><div class="hljs-line">          let [,...args] = pathname.<span class="hljs-keyword">match</span>(reg); <span class="hljs-comment">// ['/user/detail/1',1]</span>
+</div><div class="hljs-line">          keys = keys.map(k =&gt; k.name); <span class="hljs-comment">// ['name']</span>
+</div><div class="hljs-line">          let params = keys.reduce((memo,key,index)=&gt;(memo[key]=args[index],memo),{});
+</div><div class="hljs-line">          props.<span class="hljs-keyword">match</span> = {params}
+</div><div class="hljs-line">          <span class="hljs-keyword">if</span>(<span class="hljs-type">Component</span>){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> &lt;<span class="hljs-type">Component</span> {...props}&gt;&lt;/<span class="hljs-type">Component</span>&gt;
+</div><div class="hljs-line">          }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(render){
+</div><div class="hljs-line">              <span class="hljs-keyword">return</span> render(props);
+</div><div class="hljs-line">          } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (children){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> children(props);
+</div><div class="hljs-line">          }
+</div><div class="hljs-line">        }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">          <span class="hljs-keyword">if</span>(children){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> children(props);
+</div><div class="hljs-line">          }
+</div><div class="hljs-line">          <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    }}
+</div><div class="hljs-line">    &lt;/<span class="hljs-type">Consumer</span>&gt;)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ol start="4"><li rel="4"><p>react-router-dom <code>link</code></p></li>
+</ol>
+
+<blockquote>
+  <ul><li><p>用到了父孙传值的<code>Consumer</code></p></li>
+  <li><p>用到了<code>this.props.history.push</code></p></li>
+  <li><p>使用的是<code>a标签</code></p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> {Consumer} <span class="hljs-keyword">from</span> <span class="hljs-string">'./context'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Link</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">  render() {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Consumer</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">      {(value)=&gt;{</span>
+</div><div class="hljs-line"><span class="xml">        let {history:{push}} = value;</span>
+</div><div class="hljs-line"><span class="xml">        return <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span>=&gt;</span>{</span>
+</div><div class="hljs-line"><span class="xml">          push(this.props.to);</span>
+</div><div class="hljs-line"><span class="xml">        }}&gt;{this.props.children}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">      }}</span>
+</div><div class="hljs-line"><span class="xml">     <span class="hljs-tag">&lt;/<span class="hljs-name">Consumer</span>&gt;</span></span>);
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ol start="5"><li rel="5"><p>react-router-dom <code>switch</code></p></li>
+</ol>
+
+<blockquote>
+  <p>主要功能：返回匹配路由的第一个；不继续往下执行</p>
+  
+  <ul><li><p>父孙传值的<code>Consumer</code></p></li>
+  <li><p>思路：拿到其中的所有的route 判断 路径是否匹配到 如果匹配到了，不要再匹配了</p></li>
+  <li><p>用到了<code>path-to-regexp</code></p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> { Consumer } <span class="hljs-keyword">from</span> <span class="hljs-string">'./context'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> pathToRegExp <span class="hljs-keyword">from</span> <span class="hljs-string">'path-to-regexp'</span>
+</div><div class="hljs-line"><span class="hljs-comment">// 拿到其中的所有的route 判断 路径是否匹配到 如果匹配到了，不要再匹配了</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Switch</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
+</div><div class="hljs-line">  render() {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Consumer</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">      {(value)=&gt;{</span>
+</div><div class="hljs-line"><span class="xml">        let {location:{pathname}} = value;</span>
+</div><div class="hljs-line"><span class="xml">        let children = this.props.children;</span>
+</div><div class="hljs-line"><span class="xml">        for(let i = 0;i<span class="hljs-tag">&lt;<span class="hljs-name">children.length;i++){</span></span></span>
+</div><div class="hljs-line"><span class="xml">          <span class="hljs-attr">let</span> <span class="hljs-attr">child</span> = <span class="hljs-string">children[i];</span></span>
+</div><div class="hljs-line"><span class="xml">          <span class="hljs-attr">let</span> {<span class="hljs-attr">path</span>=<span class="hljs-string">'/'</span>,<span class="hljs-attr">exact</span>=<span class="hljs-string">false,component:Component}</span> = <span class="hljs-string">child.props;</span></span>
+</div><div class="hljs-line"><span class="xml">          <span class="hljs-attr">let</span> <span class="hljs-attr">reg</span> = <span class="hljs-string">pathToRegExp(path,</span> [], { <span class="hljs-attr">end:</span> <span class="hljs-attr">exact</span>});</span>
+</div><div class="hljs-line"><span class="xml">          <span class="hljs-attr">if</span> (<span class="hljs-attr">reg.test</span>(<span class="hljs-attr">pathname</span>)){</span>
+</div><div class="hljs-line"><span class="xml">            <span class="hljs-attr">return</span> <span class="hljs-attr">child</span>; // 如果匹配到了 把这个元素返回 </span>
+</div><div class="hljs-line"><span class="xml">          }</span>
+</div><div class="hljs-line"><span class="xml">        }</span>
+</div><div class="hljs-line"><span class="xml">        <span class="hljs-attr">return</span> <span class="hljs-attr">null</span></span>
+</div><div class="hljs-line"><span class="xml">      }}</span>
+</div><div class="hljs-line"><span class="xml">    &lt;/<span class="hljs-attr">Consumer</span>&gt;</span>
+</div><div class="hljs-line"><span class="xml">  }</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div></code></pre>
+
+<ol start="6"><li rel="6"><p>react-router-dom <code>redirect</code></p></li>
+</ol>
+
+<blockquote>
+  <p>push(this.props.to)</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> React,{Component} <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> {Consumer} <span class="hljs-keyword">from</span> <span class="hljs-string">'./context'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Redirect</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span></span>{
+</div><div class="hljs-line">   render(){
+</div><div class="hljs-line">     <span class="hljs-keyword">return</span> (<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Consumer</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">        {(value)=&gt;{</span>
+</div><div class="hljs-line"><span class="xml">          let {history:{push}} = value;</span>
+</div><div class="hljs-line"><span class="xml">          push(this.props.to);</span>
+</div><div class="hljs-line"><span class="xml">          return null;</span>
+</div><div class="hljs-line"><span class="xml">        }}</span>
+</div><div class="hljs-line"><span class="xml">     <span class="hljs-tag">&lt;/<span class="hljs-name">Consumer</span>&gt;</span></span>)
+</div><div class="hljs-line"> }
+</div><div class="hljs-line">}
+</div></code></pre></div>

@@ -1,0 +1,171 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="第15天复习盒子获取样式等">第15天：复习盒子、获取样式等</h3>
+
+<p></p>
+
+<p><strong>CSS中的盒子模型</strong></p>
+
+<ul><li><ol>
+<li rel="1"><p>一个盒子的WIDTH/HEIGHT/PADDING/BORDER/MARGIN…样式属性构成一个盒子模型</p></li></ol>
+
+<p><strong>[传统]</strong></p></li>
+<li><p>WIDTH/HEIGHT: 内容的宽度和高度（盒子的宽度高度是内容+填充+边框）</p>
+
+<p><strong>[CSS3]</strong></p></li>
+<li><p>BOX-SIZING:BORDER-BOX</p></li>
+<li><p>WIDTH/HEIGHT:一个盒子的最终宽高，我们调整PADDING/BORDER，盒子大小不变，会自动的缩减内容的宽度和高度</p>
+
+<p><strong>JS中的盒子模型</strong></p></li>
+<li><p>1.基于一些属性和方法获取到当前元素的相关样式</p></li>
+<li><p>CLIENT(WIDTH/HEIGHT/TOP/LEFT)</p></li>
+<li><p>OFFSET(WIDTH/HEIGHT/TOP/LEFT/PARENT)</p></li>
+<li><p>SCROLL(WIDTH/HEIGHT/TOP/LEFT)</p></li>
+</ul>
+
+<hr>
+
+<p><strong><code>CLIENT系列</code></strong></p>
+
+<ol start="1"><li rel="1"><p>CLIENT(WIDTH/HEIGHT) 内容的宽高+PADDING，代表当前盒子可视区域的宽高 “对于浏览器来说，可视区域其实就是一屏幕的宽度和高度” <br>
+//获取当前浏览器一屏幕的宽度高度（兼容所有浏览器）</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs coffeescript"><div class="hljs-line"><span class="hljs-regexp">//</span> <span class="hljs-built_in">document</span>.documentElement.clientWidth || <span class="hljs-built_in">document</span>.body.clientWidth
+</div><div class="hljs-line"><span class="hljs-regexp">//</span> <span class="hljs-built_in">document</span>.documentElement.clientHeight || <span class="hljs-built_in">document</span>.body.clientHeight
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>CLIENT(TOP/LEFT) 盒子边框的宽度(上/左)</p></li>
+</ol>
+
+<hr>
+
+<p><strong><code>OFFSET系列</code></strong> <br>
+OFFSET(WIDTH/HEIGHT)：在CLIENT的基础上加上BORDER（内容宽高+PADDING+BORDER） <br>
+注意：当我们设置了固定的宽高，不管内容是否溢出，对宽高都不会有影响，所以CLIENT \ OFFSET 获取的结果不受内容是否溢出的影响</p>
+
+<hr>
+
+<p>SCROLL(WIDTH/HEIGHT)：真实内容的宽高(包含溢出部分的内容)+左或者上PADDING，当内容没有溢出的情况下和CLIENT相同 <br>
+基于这个属性获取的值每个浏览器都不太一样，而且同一个浏览器设置了OVERFLOW：HIDDEN也会对结果产生影响（这个值是一个参考值）</p>
+
+<blockquote>
+  <p>获取当前页面真实的高度</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs coffeescript"><div class="hljs-line"><span class="hljs-built_in">document</span>.documentElement.scrollHeight||<span class="hljs-built_in">document</span>.body.scrollHeight
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p>刚才学习的8个属性具备一些特点：</p>
+  
+  <ol><li rel="1"><p>获取的结果是一个数字(没有单位)</p></li>
+  <li rel="2"><p>获取的结果是几个样式组合到一起的值（局限性：我只想获取宽高或者PADDING就不能基于这几个属性完成了）</p></li>
+  <li rel="3"><p>获取的结果都是整数（一般情况下会自己进行小数的四舍五入）</p></li>
+  </ol>
+</blockquote>
+
+<p>需求：只想获取WIDTH（获取当前元素具体的某个样式属性的值） <br>
+ getComputedStyle <br>
+⚠️注意在IE6~8中没有这个方法，需要使用 xxx.currentStyle 这个属性获取</p>
+
+<p><code>window.getComputedStyle([元素],[元素伪类，一般都是不写或者写NULL])</code> 结果是一个对象，包含当前元素所有经过浏览器计算的样式属性和值（只要当前元素可以在页面中呈现，都是被浏览器计算过的），有些样式属性是我们自己设定的，还有很多都是浏览器的默认样式值</p>
+
+<blockquote>
+  <p>GET-CSS：获取某一个元素对象指定的样式属性值 <br>
+  ELE:元素对象 <br>
+  ATTR:元素的样式属性名(字符串格式)</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> getCss = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ele, attr</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> val = <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;验证是否兼容:不兼容WIN中没有这个属性(属性值是UNDEFINED)</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//if(typeof window.getComputedStyle !== 'undefined')</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//if(window.getComputedStyle)</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (<span class="hljs-string">'getComputedStyle'</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">window</span>) {
+</div><div class="hljs-line">        val = <span class="hljs-built_in">window</span>.getComputedStyle(ele)[attr];
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;把获取的结果去除单位（只有符合 纯数字或者数字加单位的 两种字符串我们再基于PARSE-FLOAT去掉单位即可）</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> reg = <span class="hljs-regexp">/^-?\d+(\.\d+)?(px|pt|em|rem)?$/i</span>;
+</div><div class="hljs-line">        reg.test(val) ? val = <span class="hljs-built_in">parseFloat</span>(val) : <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> val;
+</div><div class="hljs-line">};
+</div></code></pre>
+
+<blockquote>
+  <p>SET-CSS：设置当前元素某一个样式属性的具体值 <br>
+  ELE:元素对象 <br>
+  ATTR:元素的样式属性名(字符串格式) <br>
+  VALUE:设置的值</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> setCss = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">ele, attr, value</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;对于某些样式属性，如果传递的值没有单位，我们手动增加PX单位</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//1.传递的需要是数字才有可能加单位</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//2.对于Z-INDEX/OPACITY等样式属性，属性值就是数字，不须要加单位</span>
+</div><div class="hljs-line">    <span class="hljs-comment">// if (!isNaN(value)) {//=&gt;传递的是有效数字(纯数字字符串)</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//     if (!/^(zIndex|opacity)$/i.test(attr)) {//=&gt;操作的样式或属性不是层级和透明度两个</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//         value += 'px';</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//     }</span>
+</div><div class="hljs-line">    <span class="hljs-comment">// }</span>
+</div><div class="hljs-line">    !<span class="hljs-built_in">isNaN</span>(value) &amp;&amp; !<span class="hljs-regexp">/^(zIndex|opacity)$/i</span>.test(attr) ? value += <span class="hljs-string">'px'</span> : <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">    ele[<span class="hljs-string">'style'</span>][attr] = value;
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;在JS中给元素设置样式只有两种</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//1.xxx.className=xxx 设置样式类(前提已经把样式写在样式类中了)</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//2.xxx.style.xxx=xxx 给元素设置行内样式值</span>
+</div><div class="hljs-line">};
+</div></code></pre>
+
+<blockquote>
+  <p>SET-GROUP-CSS：给当前元素批量设置样式 <br>
+  ELE:元素对象 <br>
+  OPTIONS:给当前元素需要设置的样式对象 <br>
+  <code>批量设置也是迭代样式对象，有几个样式属性我们就分别调取SET-CSS几次，给其设置样式</code></p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs gauss"><div class="hljs-line"><span class="hljs-keyword">let</span> setGroupCss = function (ele, options) {
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;迭代对象使用FOR-IN循环</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> <span class="hljs-built_in">key</span> in options) {
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;OPTIONS对象中有多少组键值对，循环就执行几次，每一次KEY是当前迭代的属性名，OPTIONS[KEY]就是每一次迭代的属性值</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// KEY:background / opacity</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// OPTIONS[KEY]:'lightblue' / 0.2</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (options.hasOwnProperty(<span class="hljs-built_in">key</span>)) {
+</div><div class="hljs-line">            setCss(ele, <span class="hljs-built_in">key</span>, options[<span class="hljs-built_in">key</span>]);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">};
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ul><li><p>Object.prototype.AA = 100;</p></li>
+<li><p>1.有多少组键值对就迭代多少次(可以使用BREAK/CONTINUE) </p></li>
+<li><p>2.迭代的时候，先把数字属性名按照由小到大依次迭代，完成后在迭代字符串属性名（数字优先迭代）</p></li>
+<li><p>3.FOR-IN在迭代的时候，会把当前实例原型链上自己扩展的属性和方法也迭代到（迭代公有属性），内置的不能迭代（因为他们是不可枚举的）</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> obj = {<span class="hljs-attr">name</span>: <span class="hljs-string">'xxx'</span>, <span class="hljs-number">1</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">25</span>, <span class="hljs-number">0</span>: <span class="hljs-number">0</span>};<span class="hljs-comment">//=&gt;obj.__proto__===Object.prototype</span>
+</div><div class="hljs-line"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (obj.hasOwnProperty(key)) {
+</div><div class="hljs-line">        <span class="hljs-built_in">console</span>.log(key);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}*<span class="hljs-regexp">/</span>
+</div></code></pre></div>

@@ -1,0 +1,171 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuevuex">Vue：vuex</h3>
+
+<p></p>
+
+<blockquote>
+  <p>官网文档：<a href="https://vuex.vuejs.org/zh/installation.html" target="_blank">https://vuex.vuejs.org/zh/installation.html</a> <br>
+  安装：<code>npm install vuex</code> <br>
+  特点：</p>
+  
+  <ul><li><p>单向数据流，</p></li>
+  <li><p>数据驱动视图</p></li>
+  </ul>
+  
+  <p>角色：<code>state</code>、 <code>getters</code>、  <code>mutations</code> 、 <code>actions</code></p>
+</blockquote>
+
+
+
+<h4 id="一注入store并使用">一、注入store并使用</h4>
+
+<blockquote>
+  <p>在vuex中如果想使用模块，最好使用辅助方法，限制模块作用域 <br>
+  更改方法：</p>
+  
+  <ul><li><p>如果直接修改状态，可以commit   mapMutation</p></li>
+  <li><p>如果异步修改状态，可以dispatch  ，mapActions</p></li>
+  </ul>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>main.js <br>
+如果页面中注入了store ，每个实例上都会有一个属性 <code>$store</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">'./store/index'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">new</span> Vue({
+</div><div class="hljs-line">  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-params">h</span> =&gt;</span> h(App),
+</div><div class="hljs-line">  store
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}).$mount(<span class="hljs-string">'#app'</span>)
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>建立<code>store</code>文件夹</p>
+
+<ul>
+<li><p>创建<code>state.js</code></p></li>
+<li><p>创建<code>getters.js</code></p></li>
+<li><p>创建<code>actions.js</code>    可以在actions中多次触发</p></li>
+<li><p>创建<code>mutations.js</code></p></li></ul></li>
+</ol>
+
+<blockquote>
+  <p><strong><em>index.js</em></strong></p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">'vue'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> vuex <span class="hljs-keyword">from</span> <span class="hljs-string">'vuex'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> actions <span class="hljs-keyword">from</span> <span class="hljs-string">'./actions'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> mutations <span class="hljs-keyword">from</span> <span class="hljs-string">'./mutations'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> getters <span class="hljs-keyword">from</span> <span class="hljs-string">'./getters'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> state <span class="hljs-keyword">from</span> <span class="hljs-string">'./state'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span>  user <span class="hljs-keyword">from</span> <span class="hljs-string">'./modules/user'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">Vue.use(vuex);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">new</span> vuex.Store({
+</div><div class="hljs-line">    <span class="hljs-attr">modules</span>:{
+</div><div class="hljs-line">        user
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">strict</span>:process.env.NODE_ENV!==<span class="hljs-string">'production'</span>,<span class="hljs-comment">//校验更改状态的合法性</span>
+</div><div class="hljs-line">    actions,
+</div><div class="hljs-line">    mutations,
+</div><div class="hljs-line">    getters,
+</div><div class="hljs-line">    state
+</div><div class="hljs-line">})
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p><strong><em>state.js</em></strong> <br>
+  默认挂载到$store.state下</p>
+  
+  <p>注意：</p>
+  
+  <ul><li><p>如果状态相同，会覆盖，子覆盖父</p></li>
+  <li><p>状态不受模块控制</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
+</div><div class="hljs-line">    <span class="hljs-attr">name</span>:<span class="hljs-string">'大白'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">class</span>:<span class="hljs-string">'06-1'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">age</span>:<span class="hljs-string">'55'</span>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p><strong><em>getters.js</em></strong> <br>
+  返回新值</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
+</div><div class="hljs-line">    getNewName(state){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${state.name}</span> 真帅！`</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p><strong><em>mutations.js</em></strong> <br>
+  存放方法 <br>
+  触发使用：</p>
+  
+  <ol><li rel="1"><p><code>...mapMutations('user',['change_username']),</code>、<code>this['change_username']('jw')</code></p></li>
+  <li rel="2"><p><code>this.$store.commit('change_username','jw')</code></p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> mutations:{
+</div><div class="hljs-line">    change_username(state,payload){
+</div><div class="hljs-line">         alert(<span class="hljs-string">'3'</span>);
+</div><div class="hljs-line">         state.username=payload;
+</div><div class="hljs-line">     }
+</div><div class="hljs-line"> },
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p><strong><em>actions.js</em></strong> <br>
+  触发方法：</p>
+  
+  <ol><li rel="1"><p><code>this.$store.dispatch('user/change_user1','jw')</code></p></li>
+  <li rel="2"><p><code>mapActions</code></p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> change_user(state,payload){
+</div><div class="hljs-line">     alert(<span class="hljs-string">'哈哈'</span>);
+</div><div class="hljs-line"> },
+</div><div class="hljs-line"> change_username({commit},payload){
+</div><div class="hljs-line">     setTimeout(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">         commit(<span class="hljs-string">'change_username'</span>,payload);
+</div><div class="hljs-line">     })
+</div><div class="hljs-line"> }
+</div></code></pre></div>

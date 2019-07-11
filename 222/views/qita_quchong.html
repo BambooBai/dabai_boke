@@ -1,0 +1,287 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="去重">去重</h3>
+
+<p></p>
+
+<blockquote>
+  <p>全部：</p>
+  
+  <ol><li rel="1"><p>双重循环</p></li>
+  <li rel="2"><p>indexOf </p></li>
+  <li rel="3"><p>sort+for</p></li>
+  <li rel="4"><p>includes </p></li>
+  <li rel="5"><p>reduce+sort</p></li>
+  <li rel="6"><p>键值对</p></li>
+  <li rel="7"><p>Map</p></li>
+  <li rel="8"><p>Set</p></li>
+  </ol>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>双重循环</p></li>
+</ol>
+
+<p>A:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> isRepeat;
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    isRepeat = <span class="hljs-literal">false</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = <span class="hljs-number">0</span>; j &lt; newArray.length; j++) {
+</div><div class="hljs-line">      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[i] === newArray[j]) {
+</div><div class="hljs-line">        isRepeat = <span class="hljs-literal">true</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (!isRepeat) {
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<p>B:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> isRepeat;
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    isRepeat = <span class="hljs-literal">false</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> j = i + <span class="hljs-number">1</span>; j &lt; <span class="hljs-keyword">this</span>.length; j++) {
+</div><div class="hljs-line">      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[i] === <span class="hljs-keyword">this</span>[j]) {
+</div><div class="hljs-line">        isRepeat = <span class="hljs-literal">true</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">break</span>;
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (!isRepeat) {
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>indexOf 两种</p></li>
+</ol>
+
+<p>A: filter indexof</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.filter(<span class="hljs-function">(<span class="hljs-params">item, index</span>) =&gt;</span> {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.indexOf(item) === index;
+</div><div class="hljs-line">  })
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<p>B: </p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">22</span>, <span class="hljs-number">233</span>, <span class="hljs-number">22</span>, <span class="hljs-number">2</span>, <span class="hljs-number">233</span>, <span class="hljs-string">'a'</span>, <span class="hljs-number">3</span>, <span class="hljs-string">'b'</span>, <span class="hljs-string">'a'</span>];
+</div><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (newArray.indexOf(item) === <span class="hljs-number">-1</span>) {
+</div><div class="hljs-line">      newArray.push(item);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  });
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p>includes</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (!newArray.includes(item)) {
+</div><div class="hljs-line">      newArray.push(item);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  });
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>test: 180.401123046875ms</p>
+
+<ol start="4"><li rel="4"><p>sort for</p></li>
+</ol>
+
+<p>A:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.sort();
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[i] !== <span class="hljs-keyword">this</span>[i + <span class="hljs-number">1</span>]) {
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<p>B:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.sort();
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>[i] !== newArray[newArray.length - <span class="hljs-number">1</span>]) {
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>test1: 121.6259765625ms <br>
+test2: 123.02197265625ms</p>
+
+<ol start="5"><li rel="5"><p>sort+reduce</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.sort().reduce(<span class="hljs-function">(<span class="hljs-params">init, current</span>) =&gt;</span> {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(init.length === <span class="hljs-number">0</span> || init[init.length - <span class="hljs-number">1</span>] !== current){
+</div><div class="hljs-line">      init.push(current);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> init;
+</div><div class="hljs-line">  }, []);
+</div></code></pre>
+
+<ol start="6"><li rel="6"><p>键值对 <br>
+基本思路：利用了对象的key不可以重复的特性来进行去重。 <br>
+但需要注意：</p>
+
+<ul>
+<li><p>无法区分隐式类型转换成字符串后一样的值，比如 1 和 ‘1’</p></li>
+<li><p>无法处理复杂数据类型，比如对象（因为对象作为 key 会变成 [object Object]）</p></li>
+<li><p>特殊数据，比如 ‘proto’，因为对象的 proto 属性无法被重写</p></li></ul></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> tmp = {};
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (!tmp[<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>[i] + <span class="hljs-keyword">this</span>[i]]) {
+</div><div class="hljs-line">      tmp[<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>[i] + <span class="hljs-keyword">this</span>[i]] = <span class="hljs-number">1</span>;
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>解决第二点问题，实现二</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> tmp = {};
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++) {
+</div><div class="hljs-line">    <span class="hljs-comment">// 使用JSON.stringify()进行序列化</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (!tmp[<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>[i] + <span class="hljs-built_in">JSON</span>.stringify(<span class="hljs-keyword">this</span>[i])]) {
+</div><div class="hljs-line">      <span class="hljs-comment">// 将对象序列化之后作为key来使用</span>
+</div><div class="hljs-line">      tmp[<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">this</span>[i] + <span class="hljs-built_in">JSON</span>.stringify(<span class="hljs-keyword">this</span>[i])] = <span class="hljs-number">1</span>;
+</div><div class="hljs-line">      newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>test1: 113.849365234375ms <br>
+test2: 157.030029296875ms</p>
+
+<ol start="7"><li rel="7"><p>Map</p></li>
+</ol>
+
+<p>A:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> newArray = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> tmp = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>();
+</div><div class="hljs-line">  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">this</span>.length; i++){
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(!tmp.get(<span class="hljs-keyword">this</span>[i])){
+</div><div class="hljs-line">            tmp.set(<span class="hljs-keyword">this</span>[i], <span class="hljs-number">1</span>);
+</div><div class="hljs-line">            newArray.push(<span class="hljs-keyword">this</span>[i]);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> newArray;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>B;</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> tmp = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>();
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.filter(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> !tmp.has(item) &amp;&amp; tmp.set(item, <span class="hljs-number">1</span>);
+</div><div class="hljs-line">  })
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>test1: 27.89697265625ms <br>
+test2: 21.945068359375ms</p>
+
+<ol start="8"><li rel="8"><p>Set</p></li>
+</ol>
+
+<p>A:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">const</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>(<span class="hljs-keyword">this</span>);
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.from(set);
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>B:</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Array</span>.prototype.unique = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> [...new <span class="hljs-built_in">Set</span>(<span class="hljs-keyword">this</span>)];
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>test1: 36.8046875ms <br>
+test2: 31.98681640625ms</p>
+
+<blockquote>
+  <p>总结：经过综合考虑，最优的数组去重算法是采用Map数据结构实现的算法。</p>
+</blockquote></div>

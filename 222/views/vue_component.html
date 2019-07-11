@@ -1,0 +1,146 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuecomponent组件">Vue：Component组件</h3>
+
+<p></p>
+
+
+
+<h4 id="一组件的分类">一、组件的分类</h4>
+
+<blockquote>
+  <ul><li><p>全局组件</p></li>
+  <li><p>局部组件</p></li>
+  </ul>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>全局组件</p></li>
+</ol>
+
+<blockquote>
+  <p>注意：</p>
+  
+  <ul><li><p>data不是对象，是函数：为了每个组件的数据，互不影响</p></li>
+  <li><p>组件最好不要单闭合，会出问题，比如多个组件不显示</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">Vue.component(<span class="hljs-string">'my-button'</span>,{
+</div><div class="hljs-line">    data(){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> {<span class="hljs-attr">msg</span>:<span class="hljs-string">'咬我啊'</span>}
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">template</span>:<span class="hljs-string">`&lt;button&gt;{{msg}}&lt;/button&gt;`</span>》 
+</div><div class="hljs-line">})
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p>局部组件</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> components:{
+</div><div class="hljs-line">    <span class="hljs-string">'my-button'</span>:{
+</div><div class="hljs-line">        data(){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> {<span class="hljs-attr">msg</span>:<span class="hljs-string">'点我啊'</span>}
+</div><div class="hljs-line">        },
+</div><div class="hljs-line">        <span class="hljs-attr">template</span>:<span class="hljs-string">`&lt;button&gt;{{msg}}&lt;/button&gt;`</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  },
+</div></code></pre>
+
+
+
+<h4 id="二组件的交互7种">二、组件的交互（7种）</h4>
+
+<p><code>通过数据 传递给组件</code></p>
+
+<blockquote>
+  <ol><li rel="1"><p>属性传递</p></li>
+  <li rel="2"></li>
+  </ol>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>属性传递</p></li>
+</ol>
+
+<p>注意：<code>如果想在父级中 绑定原生事件给组件 需要加.native 不加就认为是一个普通属性</code></p>
+
+<blockquote>
+  <p>知识点：<code>值验证</code>；</p>
+  
+  <ul><li><p>传值默认是字符串类型，如果传对象类型或者数组类型，需要在<code>属性前面加":"</code></p></li>
+  <li><p>子组件内有逻辑判断，方法<code>validator</code>即可实现</p></li>
+  <li><p><code>验证是给开发人员看的，不影响页面的渲染</code></p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs django"><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">my-button</span>  <span class="hljs-attr">:a</span>=<span class="hljs-string">"1"</span> <span class="hljs-attr">b</span>=<span class="hljs-string">"4"</span> &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">my-button</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+</div><div class="hljs-line"><span class="xml">        components:{</span>
+</div><div class="hljs-line"><span class="xml">          <span class="hljs-string">'MyButton'</span>:{</span>
+</div><div class="hljs-line"><span class="xml">               <span class="hljs-attr">props</span>:{</span>
+</div><div class="hljs-line"><span class="xml">                   <span class="hljs-attr">msg</span>:{</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">type</span>:<span class="hljs-built_in">String</span>,</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">default</span>:<span class="hljs-string">'点我啊'</span></span>
+</div><div class="hljs-line"><span class="xml">                   },</span>
+</div><div class="hljs-line"><span class="xml">                   <span class="hljs-attr">a</span>:{</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">type</span>:<span class="hljs-built_in">Number</span></span>
+</div><div class="hljs-line"><span class="xml">                   },</span>
+</div><div class="hljs-line"><span class="xml">                   <span class="hljs-attr">b</span>:{</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">type</span>:<span class="hljs-built_in">String</span>,</span>
+</div><div class="hljs-line"><span class="xml">                       validator(value){</span>
+</div><div class="hljs-line"><span class="xml">                           <span class="hljs-keyword">return</span> value&gt;<span class="hljs-number">3</span></span>
+</div><div class="hljs-line"><span class="xml">                       }</span>
+</div><div class="hljs-line"><span class="xml">                   },</span>
+</div><div class="hljs-line"><span class="xml">                   <span class="hljs-attr">arr</span>:{</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">type</span>:<span class="hljs-built_in">Array</span>,</span>
+</div><div class="hljs-line"><span class="xml">                       <span class="hljs-attr">default</span>:<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]) <span class="hljs-comment">// 属性校验中 如果是数组／对象 需要将默认值返回</span></span>
+</div><div class="hljs-line"><span class="xml">                   }</span>
+</div><div class="hljs-line"><span class="xml">               },</span>
+</div><div class="hljs-line"><span class="xml">               <span class="hljs-attr">template</span>:<span class="hljs-string">`&lt;button&gt;</span></span><span class="hljs-template-variable">{{msg}}</span><span class="xml"><span class="undefined"> </span></span><span class="hljs-template-variable">{{a}}</span><span class="xml"><span class="undefined"> </span></span><span class="hljs-template-variable">{{b}}</span><span class="xml"><span class="undefined"> </span></span><span class="hljs-template-variable">{{arr}}</span><span class="xml"><span class="handlebars"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>`</span></span></span>
+</div><div class="hljs-line"><span class="xml">           }</span>
+</div><div class="hljs-line"><span class="xml">       }</span>
+</div><div class="hljs-line"><span class="xml">   <span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div></code></pre>
+
+
+
+<h4 id="三儿子调用父亲的方法三种">三、儿子调用父亲的方法：（三种）</h4>
+
+<ol><li rel="1"><p><code>emit.click</code></p></li>
+<li rel="2"><p><code>listeners.click</code></p></li>
+<li rel="3"><p><code>v-on="$listeners"</code> 把所有的事件都触发了 </p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> <span class="hljs-comment">// props  emit  ($attrs  $listeners)    ($parent  $children)</span>
+</div><div class="hljs-line"> <span class="hljs-keyword">let</span> vm = <span class="hljs-keyword">new</span> Vue({ 
+</div><div class="hljs-line">      <span class="hljs-attr">el</span>:<span class="hljs-string">'#app'</span>,
+</div><div class="hljs-line">      <span class="hljs-attr">data</span>:{ 
+</div><div class="hljs-line">          <span class="hljs-attr">content</span>:<span class="hljs-string">'点我啊'</span>
+</div><div class="hljs-line">      },
+</div><div class="hljs-line">      <span class="hljs-attr">methods</span>:{
+</div><div class="hljs-line">          change(){
+</div><div class="hljs-line">              alert(<span class="hljs-number">1</span>);
+</div><div class="hljs-line">          }
+</div><div class="hljs-line">      },
+</div><div class="hljs-line">      <span class="hljs-attr">components</span>:{
+</div><div class="hljs-line">          <span class="hljs-string">'MyButton'</span>:{ <span class="hljs-comment">// v-bind=$attrs  v-on=$listeners 绑定所有的方法</span>
+</div><div class="hljs-line">              template:<span class="hljs-string">`&lt;div&gt;</span>
+</div><div class="hljs-line"><span class="hljs-string">                  &lt;button @click="$listeners.click()"&gt;点我啊&lt;/button&gt;</span>
+</div><div class="hljs-line"><span class="hljs-string">                  &lt;button @click="$emit('click')"&gt;点我啊&lt;/button&gt;</span>
+</div><div class="hljs-line"><span class="hljs-string">                  &lt;button v-on="$listeners"&gt;点我啊&lt;/button&gt;</span>
+</div><div class="hljs-line"><span class="hljs-string">              &lt;/div&gt;`</span>
+</div><div class="hljs-line">          }
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">  });
+</div></code></pre></div>

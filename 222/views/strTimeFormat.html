@@ -1,0 +1,87 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h4 id="基础string实战时间字符串格式化">基础：String：实战：时间字符串格式化</h4>
+
+<p></p>
+
+<blockquote>
+  <p><strong>要求：</strong></p>
+  
+  <ol><li rel="1"><p>把原有时间字符串中的 年\月\日\时\分\秒 都得到</p>
+  
+  <ul><li><p>先按照空格拆</p></li>
+  <li><p>左边按照斜杠拆，右边按招冒号拆</p></li>
+  <li><p>split</p></li>
+  </ul></li>
+  <li rel="2"><p>拼接成我们自己想要的格式即可</p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> str = <span class="hljs-string">"2018/4/6 12:48:6"</span>; <span class="hljs-comment">//=&gt;"04-06 12:48"</span>
+</div></code></pre>
+
+<ul><li><p>方法一：</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> ary = str.split(<span class="hljs-string">' '</span>),<span class="hljs-comment">//=&gt;["2018/4/6", "12:48:6"]</span>
+</div><div class="hljs-line">    aryLeft = ary[<span class="hljs-number">0</span>].split(<span class="hljs-string">'/'</span>),<span class="hljs-comment">//=&gt;["2018", "4", "6"]</span>
+</div><div class="hljs-line">    aryRight = ary[<span class="hljs-number">1</span>].split(<span class="hljs-string">':'</span>);<span class="hljs-comment">//=&gt;["12", "48", "6"]</span>
+</div><div class="hljs-line">ary = aryLeft.concat(aryRight);<span class="hljs-comment">//=&gt;["2018", "4", "6", "12", "48", "6"]</span>
+</div></code></pre>
+
+<ul><li><p>方法二：</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> ary = str.split(<span class="hljs-regexp">/(?:\/| |:)/g</span>);<span class="hljs-comment">//=&gt;["2018", "4", "6", "12", "48", "6"]</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> res = addZero(ary[<span class="hljs-number">1</span>]) + <span class="hljs-string">'-'</span> + addZero(ary[<span class="hljs-number">2</span>]) + <span class="hljs-string">' '</span> + addZero(ary[<span class="hljs-number">3</span>]) + <span class="hljs-string">':'</span> + addZero(ary[<span class="hljs-number">4</span>]);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(res);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;不足十位补零</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addZero</span>(<span class="hljs-params">val</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> val &lt; <span class="hljs-number">10</span> ? <span class="hljs-string">'0'</span> + val : val;
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>总结：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">// var time = "2018-04-08"; //=&gt;TARGET："2018/04/08"</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;第一种思路：先按照“-”拆成三部分，在把三部分按照“/”拼成字符串</span>
+</div><div class="hljs-line"><span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">var timeAry = time.split('-');//=&gt;["2018", "04", "08"]</span>
+</div><div class="hljs-line"><span class="hljs-comment">var result = timeAry.join('/');//=&gt;"2018/04/08"</span>
+</div><div class="hljs-line"><span class="hljs-comment">*/</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;第二种思路：直接替换即可</span>
+</div><div class="hljs-line"><span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment">time = time.replace('-', '/').replace('-', '/');</span>
+</div><div class="hljs-line"><span class="hljs-comment">console.log(time);//=&gt;"2018/04/08"</span>
+</div><div class="hljs-line"><span class="hljs-comment">*/</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> time = <span class="hljs-string">"2018-4-8 10:5:20"</span>;<span class="hljs-comment">//=&gt;TARGET："04/08 10:05"</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//1.获取当前字符串中对应的六个信息值</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> timeAry = time.split(<span class="hljs-string">' '</span>),<span class="hljs-comment">//=&gt;["2018-4-8", "10:5:20"]</span>
+</div><div class="hljs-line">    aryLeft = timeAry[<span class="hljs-number">0</span>].split(<span class="hljs-string">'-'</span>),<span class="hljs-comment">//=&gt;["2018", "4", "8"]</span>
+</div><div class="hljs-line">    aryRight = timeAry[<span class="hljs-number">1</span>].split(<span class="hljs-string">':'</span>);<span class="hljs-comment">//=&gt;["10", "5", "20"]</span>
+</div><div class="hljs-line">time = aryLeft.concat(aryRight);<span class="hljs-comment">//=&gt;["2018", "4", "8", "10", "5", "20"]</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//2.在获取的六个信息值中找到自己需要的值(补零),拼接成自己想要的字符串</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> result = addZero(time[<span class="hljs-number">1</span>]) + <span class="hljs-string">"/"</span> + addZero(time[<span class="hljs-number">2</span>]) + <span class="hljs-string">" "</span> + addZero(time[<span class="hljs-number">3</span>]) + <span class="hljs-string">":"</span> + addZero(time[<span class="hljs-number">4</span>]);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">addZero</span>(<span class="hljs-params">val</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> val &lt; <span class="hljs-number">10</span> ? <span class="hljs-string">'0'</span> + val : val;
+</div><div class="hljs-line">}
+</div></code></pre></div>

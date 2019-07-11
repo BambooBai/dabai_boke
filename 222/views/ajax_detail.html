@@ -1,0 +1,106 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="0524day3ajax事件方法监听详解3">0524DAY3：AJAX事件、方法、监听详解(3)</h3>
+
+<p></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> queryData = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">queryData</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest;
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;GET请求是URL地址问号传参把信息传递给服务器</span>
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;GET请求会产生缓存，我们一般都在URL末尾追加随机数，让其不建立缓存</span>
+</div><div class="hljs-line">            xhr.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">`/custom/list?type=chengjiao&amp;_=<span class="hljs-subst">${<span class="hljs-built_in">Math</span>.random()}</span>`</span>);
+</div><div class="hljs-line">            xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span> &amp;&amp; <span class="hljs-regexp">/^(2|3)\d{2}$/</span>.test(xhr.status)) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">let</span> data = <span class="hljs-built_in">JSON</span>.parse(xhr.responseText);
+</div><div class="hljs-line">                    resolve(data);
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            xhr.send(<span class="hljs-literal">null</span>);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> bindHTML = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bindHTML</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> promise = queryData();
+</div><div class="hljs-line">        promise.then(<span class="hljs-function"><span class="hljs-params">data</span> =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;完成数据绑定</span>
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    bindHTML();
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> timer = setInterval(bindHTML, <span class="hljs-number">10000</span>);
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest();
+</div><div class="hljs-line">    xhr.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'/temp/list'</span>, <span class="hljs-literal">true</span>);<span class="hljs-comment">//=&gt;异步</span>
+</div><div class="hljs-line">    xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {<span class="hljs-comment">//=&gt;监听的是AJAX状态“改变”事件：设置监听之前有一个状态，当后续的状态和设置之前的状态不相同，才会触发这个事件</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">2</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">1</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">2</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    xhr.send();<span class="hljs-comment">//=&gt;发送AJAX请求：这个执行才证明AJAX任务开始</span>
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-number">3</span>);
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;3 1 2</span>
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest();
+</div><div class="hljs-line">    xhr.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'笔记.MD'</span>, <span class="hljs-literal">true</span>);
+</div><div class="hljs-line">    xhr.send();<span class="hljs-comment">//=&gt;AJAX任务开始(异步)</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//此时状态是1</span>
+</div><div class="hljs-line">    xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">2</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">1</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">2</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-number">3</span>);
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;3 1 2</span>
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest();
+</div><div class="hljs-line">    xhr.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'笔记.MD'</span>, <span class="hljs-literal">false</span>);
+</div><div class="hljs-line">    xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {<span class="hljs-comment">//=&gt;监听前的状态是1</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">2</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">1</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">2</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    xhr.send();<span class="hljs-comment">//=&gt;任务开始(同步：只要当前AJAX请求这件事没有完成，什么都不能做)</span>
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-number">3</span>);
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;2 3  当AJAX任务开始，由于是同步编程，主任务队列在状态没有变成4（任务结束）之前一直被这件事占用着，其它事情都做不了（当服务器把响应头返回的时候，状态为2，触发了事件readystatechange，但是由于主任务队列没有完成，被占着呢，绑定的方法也无法执行... 所有只有状态为4的时候执行一次这个方法）</span>
+</div></code></pre>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"> <span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest();
+</div><div class="hljs-line">    xhr.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'笔记.MD'</span>, <span class="hljs-literal">false</span>);
+</div><div class="hljs-line">    xhr.send();<span class="hljs-comment">//=&gt;开始请求(状态不为4，其它是都做不了)</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;事件绑定前状态已经是4了</span>
+</div><div class="hljs-line">    xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">2</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">1</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(<span class="hljs-number">2</span>);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-number">3</span>);
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;3</span>
+</div></code></pre></div>

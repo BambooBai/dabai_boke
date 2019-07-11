@@ -1,0 +1,266 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础数据类型分类详细剖析number">基础：数据类型：分类&amp;详细剖析(Number)</h3>
+
+<p></p>
+
+<p><code>数据值是一门编程语言进行生产的材料，JS中包含的值有以下这些类型</code></p>
+
+
+
+<h4 id="一数据类型分类">一、数据类型分类</h4>
+
+<ul><li><p><strong>基本数据类型（值类型）</strong></p>
+
+<ul>
+<li><p>数字number</p></li>
+<li><p>字符串string</p></li>
+<li><p>布尔boolean</p></li>
+<li><p>null</p></li>
+<li><p>undefined</p></li></ul></li>
+<li><p><strong>引用数据类型</strong></p>
+
+<ul>
+<li><p>对象object</p></li>
+<li><p>普通对象</p></li>
+<li><p>数组对象</p></li>
+<li><p>正则对象</p></li>
+<li><p>日期对象</p></li>
+<li><p>…</p></li>
+<li><p>函数function</p></li></ul></li>
+<li><p><strong>ES6中新增加的一个特殊的类型：Symbol，唯一的值</strong></p></li>
+</ul>
+
+<p><strong>【基本数据类型】</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs cal"><div class="hljs-line"><span class="hljs-keyword">var</span> n = <span class="hljs-number">13</span>; //=&gt;<span class="hljs-number">0</span> -<span class="hljs-number">13</span> <span class="hljs-number">13.2</span> 数字类型中有一个特殊的值NaN（<span class="hljs-keyword">not</span> a number代表不是一个有效的数字,但是属于number类型的）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> s = <span class="hljs-string">''</span>;//=&gt;<span class="hljs-string">""</span> <span class="hljs-string">'13'</span> <span class="hljs-string">"{}"</span> JS中所有用单引号或者双引号包裹起来的都是字符串，里面的内容是当前字符串中的字符（一个字符串由零到多个字符组成）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> b = <span class="hljs-literal">true</span>;//=&gt;布尔类型只有两个值 <span class="hljs-literal">true</span>真 <span class="hljs-literal">false</span>假
+</div></code></pre>
+
+<p><strong>【引用数据类型】</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">var</span> o = {<span class="hljs-attr">name</span>:<span class="hljs-string">'大白大白'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">9</span>};<span class="hljs-comment">//=&gt;普通的对象：由大括号包裹起来，里面包含多组属性名和属性值（包含多组键值对） {}空对象</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> ary = [<span class="hljs-number">12</span>,<span class="hljs-number">23</span>,<span class="hljs-number">34</span>,<span class="hljs-number">45</span>]; <span class="hljs-comment">//=&gt;中括号包裹起来，包含零到多项内容，这种是数组对象  []空数组</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> reg = <span class="hljs-regexp">/-?(\d|([1-9]\d+))(\.\d+)?/g</span>; <span class="hljs-comment">//=&gt;由元字符组成一个完整的正则  //不是空正则是单行注释</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fn</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p><strong>【Symbol】</strong>：创建出来的是一个唯一的值</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">var</span> a = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'大白'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> b = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">'大白'</span>);
+</div><div class="hljs-line">a==<span class="hljs-function"><span class="hljs-params">b</span> =&gt;</span><span class="hljs-literal">false</span>
+</div></code></pre>
+
+
+
+<h4 id="扩展js代码如何被运行以及运行后如何输出结果"><mark>扩展</mark>：JS代码如何被运行以及运行后如何输出结果</h4>
+
+<p>[如何被运行]</p>
+
+<ul><li><p>把代码运行在浏览器中(浏览器内核来渲染解析)</p></li>
+<li><p>基于NODE来运行(NODE也是一个基于V8引擎渲染和解析JS的工具)</p></li>
+</ul>
+
+<p>[如何输出结果]</p>
+
+<ul><li><p>alert：在浏览器中通过弹框的方式输出(浏览器提示框)</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dart"><div class="hljs-line"><span class="hljs-keyword">var</span> <span class="hljs-built_in">num</span>=<span class="hljs-number">12</span>;
+</div><div class="hljs-line">alert(<span class="hljs-built_in">num</span>); <span class="hljs-comment">//=&gt;window.alert</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> str=<span class="hljs-string">'大白'</span>;
+</div><div class="hljs-line">alert(str);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">基于alert输出的结果都会转换为字符串：把值(如果是表达式先计算出结果)通过toString这个方法转换为字符串，然后再输出
+</div><div class="hljs-line">alert(<span class="hljs-number">1</span>+<span class="hljs-number">1</span>); =&gt;<span class="hljs-string">'2'</span>
+</div><div class="hljs-line">alert(<span class="hljs-keyword">true</span>); =&gt;<span class="hljs-string">'true'</span>
+</div><div class="hljs-line">alert([<span class="hljs-number">12</span>,<span class="hljs-number">23</span>]); =&gt;<span class="hljs-string">'12,23'</span>
+</div><div class="hljs-line">alert({name:<span class="hljs-string">'xxx'</span>}); =&gt;<span class="hljs-string">'[object Object]'</span> 对象toString后的结果就是object object，为啥？
+</div></code></pre>
+
+<ul><li><p>confirm：和alert的用法一致，只不过提示的框中有确定和取消两个按钮，所以它是确认提示框</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs ruby"><div class="hljs-line">var flag = confirm(<span class="hljs-string">'确定要退出吗?'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">if</span>(flag){
+</div><div class="hljs-line">   <span class="hljs-regexp">//</span>=&gt;<span class="hljs-symbol">flag:</span><span class="hljs-literal">true</span> 用户点击的是确定按钮
+</div><div class="hljs-line">}<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">   <span class="hljs-regexp">//</span>=&gt;<span class="hljs-symbol">flag:</span><span class="hljs-literal">false</span> 用户点击的是取消按钮
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>prompt：在confirm的基础上增加输入框</p></li>
+<li><p>console.log：在浏览器控制台输出日志（按F12(FN+F12)打开浏览器的控制台）</p>
+
+<ul>
+<li><p>Elements：当前页面中的元素和样式在这里都可以看到，还可以调节样式修改结构等</p></li>
+<li><p>Console：控制台，可以在JS代码中通过.log输出到这里，也可以在这里直接的编写JS代码</p></li>
+<li><p>Sources：当前网站的源文件都在这里</p></li>
+<li><p>…</p></li></ul></li>
+<li><p>console.dir：比log输出的更加详细一些（尤其是输出对象数据值的时候）</p></li>
+<li><p>console.table：把一个JSON数据按照表格的方式输出</p></li>
+<li><p>… （自己回去扩展更多console输出方法）</p></li>
+</ul>
+
+<hr>
+
+
+
+<h4 id="二数据类型的详细剖析">二、数据类型的详细剖析</h4>
+
+<ol start="1"><li rel="1"><p><code>number</code>数字类型 <br>
+NaN：not a number 但是它是数字类型的 <br>
+isNaN：检测当前值是否不是有效数字，返回true代表不是有效数字，返回false是有效数字</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-comment">//=&gt;语法：isNaN([value])</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> num=<span class="hljs-number">12</span>;
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(num); <span class="hljs-comment">//-&gt;检测num变量存储的值是否为非有效数字 false</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-string">'13'</span>) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-string">'大白'</span>) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">true</span>) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">false</span>) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">null</span>) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-literal">undefined</span>) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>({<span class="hljs-attr">age</span>:<span class="hljs-number">9</span>}) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>([<span class="hljs-number">12</span>,<span class="hljs-number">23</span>]) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>([<span class="hljs-number">12</span>]) =&gt;<span class="hljs-literal">false</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-regexp">/^$/</span>) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><span class="hljs-built_in">isNaN</span>(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{}) =&gt;<span class="hljs-literal">true</span>
+</div></code></pre>
+
+<p><strong><code>重要：isNaN检测的机制</code></strong></p>
+
+<blockquote>
+  <p>1、首先验证当前要检测的值是否为数字类型的，如果不是，浏览器会默认的把值转换为数字类型</p>
+  
+  <p>把非数字类型的值转换为数字</p>
+  
+  <ul><li><p><strong>其它基本类型转换为数字：直接使用Number这个方法转换的</strong> <br>
+  <code>【字符串转数字】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">  Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'13'</span>)</span> -&gt;</span><span class="hljs-number">13</span>
+</div><div class="hljs-line">  Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'13px'</span>)</span> -&gt;</span>NaN 如果当前字符串中出现任意一个非有效数字字符，结果则为NaN
+</div><div class="hljs-line">   Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'13.5'</span>)</span> -&gt;</span><span class="hljs-number">13.5</span> 可以识别小数
+</div></code></pre>
+  
+  <p><code>【布尔转数字】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">   Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-literal">true</span>)</span> -&gt;</span><span class="hljs-number">1</span>
+</div><div class="hljs-line">  Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-literal">false</span>)</span> -&gt;</span><span class="hljs-number">0</span>
+</div></code></pre>
+  
+  <p><code>【其它】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">   Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-literal">null</span>)</span> -&gt;</span><span class="hljs-number">0</span>
+</div><div class="hljs-line">   Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-literal">undefined</span>)</span> -&gt;</span>NaN
+</div></code></pre></li>
+  <li><p><strong>把引用数据类型值转换为数字：先把引用值调取toString转换为字符串，然后再把字符串调取Number转换为数字</strong> <br>
+  <code>【对象】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">    <span class="hljs-function"><span class="hljs-params">({})</span>.<span class="hljs-title">toString</span><span class="hljs-params">()</span> -&gt;</span><span class="hljs-string">'[object Object]'</span><span class="hljs-function"> -&gt;</span>NaN
+</div></code></pre>
+  
+  <p><code>【数组】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">  [<span class="hljs-number">12</span>,<span class="hljs-number">23</span>].toString<span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span><span class="hljs-string">'12,23'</span><span class="hljs-function"> -&gt;</span>NaN
+</div><div class="hljs-line">  [<span class="hljs-number">12</span>].toString<span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span><span class="hljs-string">'12'</span><span class="hljs-function"> -&gt;</span><span class="hljs-number">12</span>
+</div></code></pre>
+  
+  <p><code>【正则】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line">    <span class="hljs-regexp">/^$/</span>.toString<span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span><span class="hljs-string">'/^$/'</span><span class="hljs-function"> -&gt;</span>NaN
+</div></code></pre>
+  
+  <p><code>【思考】</code></p>
+  
+  <pre class="prettyprint hljs-dark"><code class="hljs livescript"><div class="hljs-line"> Number<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">''</span>)</span> -&gt;</span><span class="hljs-number">0</span>
+</div><div class="hljs-line"> [].toString<span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span><span class="hljs-string">''</span>  =&gt; isNaN([])：<span class="hljs-literal">false</span>
+</div></code></pre></li>
+  </ul>
+  
+  <p>2、当前检测的值已经是数字类型，是有效数字返回false，不是返回true（数字类型中只有NaN不是有效数字，其余都是有效数字）</p>
+</blockquote>
+
+<hr>
+
+<ol start="2"><li rel="2"><p><code>parseInt / parseFloat</code></p></li>
+</ol>
+
+<blockquote>
+  <p>等同于Number，也是为了把其它类型的值转换为数字类型</p>
+  
+  <p><strong>和Number的区别在于字符串转换分析上</strong></p>
+  
+  <ul><li><p><strong>Number</strong>：出现任意非有效数字字符，结果就是NaN</p></li>
+  <li><p><strong>parseInt</strong>：把一个字符串中的整数部分解析出来，<strong>parseFloat</strong>是把一个字符串中小数(浮点数)部分解析出来</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">parseInt</span>(<span class="hljs-string">'13.5px'</span>) =&gt;<span class="hljs-number">13</span>
+</div><div class="hljs-line"><span class="hljs-built_in">parseFloat</span>(<span class="hljs-string">'13.5px'</span>) =&gt;<span class="hljs-number">13.5</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">parseInt</span>(<span class="hljs-string">'width:13.5px'</span>) =&gt;<span class="hljs-literal">NaN</span> 从字符串最左边字符开始查找有效数字字符，并且转换为数字，但是一但遇到一个非有效数字字符，查找结束
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p><code>NaN</code>的比较</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-literal">NaN</span>==<span class="hljs-literal">NaN</span>：<span class="hljs-literal">false</span> <span class="hljs-literal">NaN</span>和谁都不相等，包括自己
+</div></code></pre>
+
+
+
+<h4 id="思考题有一个变量num存储的值不知道我想检测它是否为一个有效数字下面方案是否可以"><mark>思考题：</mark>有一个变量num，存储的值不知道，我想检测它是否为一个有效数字，下面方案是否可以</h4>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-keyword">if</span>(<span class="hljs-built_in">Number</span>(num)==<span class="hljs-literal">NaN</span>){
+</div><div class="hljs-line">    alert(<span class="hljs-string">'num不是有效数字!'</span>);
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<blockquote>
+  <p><strong>解决：</strong></p>
+  
+  <p>NaN和谁都不相等，条件永远不成立（即使num确实不是有效数字，转换的结果确实是NaN，但是NaN!=NaN的）</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs stylus"><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">if</span><span class="hljs-params">(isNaN(num)</span></span>){
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;检测是否为有效数字，只有这一种方案</span>
+</div><div class="hljs-line">    alert(<span class="hljs-string">'num不是有效数字!'</span>)
+</div><div class="hljs-line">}
+</div></code></pre></div>

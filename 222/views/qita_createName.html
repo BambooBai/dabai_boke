@@ -1,0 +1,69 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础变量创建变量variable的六种方式命名规范">基础：变量：创建变量（variable）的六种方式&amp;命名规范</h3>
+
+<p></p>
+
+<p>它不是具体的值，只是一个用来存储具体值的容器或者代名词，因为它存储的值可以改变，所以称为<code>变量</code></p>
+
+<blockquote>
+  <p><strong>基于ES语法规范，在JS中创建变量有以下方式</strong></p>
+  
+  <ol><li rel="1"><p><code>var (ES3)</code></p></li>
+  <li rel="2"><p><code>function (ES3)</code> 创建函数(函数名也是变量，只不过存储的值是函数类型的而已)</p></li>
+  <li rel="3"><p><code>let (ES6)</code></p></li>
+  <li rel="4"><p><code>const (ES6)</code> 创建的是常量</p></li>
+  <li rel="5"><p><code>import (ES6)</code> 基于ES6的模块规范导出需要的信息</p></li>
+  <li rel="6"><p><code>class (ES6)</code>基于ES6创建类</p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">/*</span>
+</div><div class="hljs-line"><span class="hljs-comment"> * 语法：</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   var [变量名]=值</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   let [变量名]=值</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   const [变量名]=值</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   function 函数名(){</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   }</span>
+</div><div class="hljs-line"><span class="hljs-comment"> *   ...</span>
+</div><div class="hljs-line"><span class="hljs-comment"> */</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> n = <span class="hljs-number">13</span>;
+</div><div class="hljs-line">n = <span class="hljs-number">15</span>;
+</div><div class="hljs-line">alert(n+<span class="hljs-number">10</span>);<span class="hljs-comment">//=&gt;弹出来25 此时的N代表15</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> m = <span class="hljs-number">100</span>;
+</div><div class="hljs-line">m = <span class="hljs-number">200</span>;<span class="hljs-comment">//=&gt;Uncaught TypeError: Assignment to constant variable. 不能给一个常量重新的赋值（常量存储的值不能被修改，能够修改就是变量了）</span>
+</div></code></pre>
+
+<blockquote>
+  <p><strong>创建变量，命名的时候要遵循一些规范</strong></p>
+  
+  <ol><li rel="1"><p>严格区分大小写</p></li>
+  <li rel="2"><p>遵循驼峰命名法：按照数字、字母、下划线或者$来命名（数字不能做为名字的开头），命名的时候基于英文单词拼接成一个完整的名字（第一个单词字母小写，其余每一个有意义单词的首字母都大写）</p></li>
+  <li rel="3"><p>不能使用关键字和保留字：在JS中有特殊含义的叫做关键词，未来可能会成为关键字的叫做保留字</p></li>
+  </ol>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs lasso"><div class="hljs-line"><span class="hljs-built_in">var</span> n=<span class="hljs-number">12</span>;
+</div><div class="hljs-line"><span class="hljs-built_in">var</span> N=<span class="hljs-number">13</span>; <span class="hljs-comment">//=&gt;两个n不是同一个变量</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">var</span> studentInfo / student_info / _studentInfo（下划线在前的，都是公共变量） / $studentInfo（一般存储的是JQ元素）<span class="hljs-params">...</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">//语义化强一些</span>
+</div><div class="hljs-line">  add / create / insert
+</div><div class="hljs-line">  del（delete）/ update / remove（rm）
+</div><div class="hljs-line">  info / detail
+</div><div class="hljs-line">  <span class="hljs-keyword">log</span>
+</div><div class="hljs-line">  <span class="hljs-params">...</span>
+</div></code></pre>
+
+<hr></div>

@@ -1,0 +1,142 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="vuecli">Vue：cli</h3>
+
+<p></p>
+
+<blockquote>
+  <p>安装vuecli命令并使用</p>
+  
+  <ul><li><p><code>sudo npm install @vue/cli -g</code>  vue脚手架</p></li>
+  <li><p><code>sudo npm install -g @vue/cli-service-global</code>  vuecli运行依赖</p>
+  
+  <ul>
+  <li><p>可升级</p></li>
+  <li><p>基于 webpack 构建，并带有合理的默认配置</p></li>
+  <li><p>可以通过项目内的配置文件进行配置</p></li>
+  <li><p>可以通过插件进行扩展 </p></li></ul></li>
+  <li><p><code>vue create  firstProject</code>  创建vue项目     <a href="https://cli.vuejs.org/zh/guide/creating-a-project.html#vue-create" target="_blank">链接</a></p></li>
+  <li><p><code>npm run serve</code>  运行项目</p></li>
+  <li><p>vue serve Home.vue  <code>运行vue项目</code></p></li>
+  </ul>
+</blockquote>
+
+
+
+<h4 id="一入口">一、入口</h4>
+
+<p>main.js</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">'vue'</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">'./App.vue'</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">Vue.config.productionTip = <span class="hljs-literal">false</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">new</span> Vue({
+</div><div class="hljs-line">  <span class="hljs-attr">render</span>: <span class="hljs-function"><span class="hljs-params">h</span> =&gt;</span> h(App),
+</div><div class="hljs-line">}).$mount(<span class="hljs-string">'#app'</span>)
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+
+
+<h4 id="一vue结构">一、vue结构</h4>
+
+<p><code>templte</code>、<code>script</code>、<code>style</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">&lt;template&gt;
+</div><div class="hljs-line">  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"app"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"Vue logo"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"./assets/logo.png"</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">HelloWorld</span> <span class="hljs-attr">msg</span>=<span class="hljs-string">"Welcome to Your Vue.js App"</span>/&gt;</span></span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-keyword">import</span> HelloWorld <span class="hljs-keyword">from</span> <span class="hljs-string">'./components/HelloWorld.vue'</span></span>
+</div><div class="hljs-line"><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attr">name</span>: <span class="hljs-string">'app'</span>,</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attr">components</span>: {</span>
+</div><div class="hljs-line"><span class="xml">    HelloWorld</span>
+</div><div class="hljs-line"><span class="xml">  }</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+</div><div class="hljs-line"><span class="xml"></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"less"</span>&gt;</span><span class="css"></span></span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-selector-id">#app</span> {</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">font-family</span>: <span class="hljs-string">'Avenir'</span>, Helvetica, Arial, sans-serif;</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">-webkit-font-smoothing</span>: antialiased;</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">-moz-osx-font-smoothing</span>: grayscale;</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">text-align</span>: center;</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">color</span>: <span class="hljs-number">#2c3e50</span>;</span>
+</div><div class="hljs-line"><span class="xml">  <span class="hljs-attribute">margin-top</span>: <span class="hljs-number">60px</span>;</span>
+</div><div class="hljs-line"><span class="xml">}</span>
+</div><div class="hljs-line"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span></span>
+</div></code></pre>
+
+
+
+<h4 id="三vue配置">三、vue配置</h4>
+
+<p>手动创建<code>vue.config.js</code></p>
+
+<blockquote>
+  <p>注意：</p>
+  
+  <ul><li><p>文件时基于node，node不支持es6的<code>import</code></p></li>
+  <li><p>默认环境变量 NODE_ENV <code>production development</code></p></li>
+  </ul>
+</blockquote>
+
+<p><strong>打包参考链接：<a href="https://cli.vuejs.org/guide/deployment.html#general-guidelines" target="_blank">链接</a></strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.exports = {
+</div><div class="hljs-line">    <span class="hljs-comment">// baseURL</span>
+</div><div class="hljs-line">    publicPath:process.env.NODE_ENV === <span class="hljs-string">'production'</span>? <span class="hljs-string">'http://www.zhufeng.cn'</span>:<span class="hljs-string">'/'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">assetsDir</span>:<span class="hljs-string">'asserts'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">outputDir</span>:<span class="hljs-string">'./dist'</span>,
+</div><div class="hljs-line">    <span class="hljs-comment">// 使用模版方式 一般不使用</span>
+</div><div class="hljs-line">    runtimeCompiler:<span class="hljs-literal">false</span>,
+</div><div class="hljs-line">    <span class="hljs-comment">// 打包 不再使用sourcemap</span>
+</div><div class="hljs-line">    productionSourceMap:<span class="hljs-literal">false</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">chainWebpack</span>:<span class="hljs-function"><span class="hljs-params">config</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-comment">// 可以获取到webpack的配置 在增加一些自己的逻辑</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// 配置目录别名 别名叫+</span>
+</div><div class="hljs-line">        config.resolve.alias.set(<span class="hljs-string">'_c'</span>,path.resolve(__dirname,<span class="hljs-string">'src/components'</span>));
+</div><div class="hljs-line">        config.resolve.alias.set(<span class="hljs-string">'_v'</span>,path.resolve(__dirname,<span class="hljs-string">'src/views'</span>));
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">configureWebpack</span>:{ <span class="hljs-comment">// webpack-merge</span>
+</div><div class="hljs-line">        plugins:[],
+</div><div class="hljs-line">        <span class="hljs-attr">module</span>:{}
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">devServer</span>:{ <span class="hljs-comment">// 开发 服务时使用</span>
+</div><div class="hljs-line">        proxy:{
+</div><div class="hljs-line">            <span class="hljs-string">'/api/getUser'</span>:{
+</div><div class="hljs-line">                <span class="hljs-attr">target</span>:<span class="hljs-string">'http://localhost:3000'</span>,
+</div><div class="hljs-line">                <span class="hljs-attr">pathRewrite</span>:{
+</div><div class="hljs-line">                    <span class="hljs-string">'/api'</span>:<span class="hljs-string">''</span>
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-attr">pluginOptions</span>: {
+</div><div class="hljs-line">      <span class="hljs-string">'style-resources-loader'</span>: { <span class="hljs-comment">//为每个文件都引入这个样式</span>
+</div><div class="hljs-line">        preProcessor: <span class="hljs-string">'less'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">patterns</span>: [
+</div><div class="hljs-line">            path.resolve(__dirname,<span class="hljs-string">'src/assets/common.less'</span>)
+</div><div class="hljs-line">        ]
+</div><div class="hljs-line">      }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div></code></pre></div>

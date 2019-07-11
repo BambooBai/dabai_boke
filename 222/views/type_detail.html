@@ -1,0 +1,210 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="基础数据类型详细剖析boolnullundefinedobject">基础：数据类型：详细剖析(Bool/Null/Undefined/Object)</h3>
+
+<p></p>
+
+
+
+<h4 id="一布尔类型">一、布尔类型</h4>
+
+<blockquote>
+  <p>只有两个值：true / false </p>
+</blockquote>
+
+<p>如何把其它数据类型转换为布尔类型?</p>
+
+<ul><li><p>Boolean</p></li>
+<li><p>!</p></li>
+<li><p>!!</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">Boolean</span>(<span class="hljs-number">1</span>) =&gt;<span class="hljs-literal">true</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">!<span class="hljs-string">'大白大白'</span> =&gt;先把其它数据类型转换为布尔类型，然后取反
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">!!<span class="hljs-function"><span class="hljs-params">null</span> =&gt;</span>去两次反，等价于没取反，也就剩下转换为布尔类型了
+</div></code></pre>
+
+<p>规律：<strong><code>在JS中只有“0/NaN/空字符串/null/undefined”这五个值转换为布尔类型的false，其余都转换为true</code></strong></p>
+
+<hr>
+
+
+
+<h4 id="二-null-undefined">二、 null &amp;&amp; undefined</h4>
+
+<blockquote>
+  <p>都代表空或者没有</p>
+  
+  <ul><li><p>null：空对象指针</p></li>
+  <li><p>undefined：未定义</p></li>
+  </ul>
+</blockquote>
+
+<p>null一般都是意料之中的没有（通俗理解：一般都是人为手动的先赋值为null，后面的程序中我们会再次给他赋值）</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> num = <span class="hljs-literal">null</span>; <span class="hljs-comment">//=&gt;null是手动赋值，预示着后面我会把num变量的值进行修改</span>
+</div><div class="hljs-line">...
+</div><div class="hljs-line">num = <span class="hljs-number">12</span>;
+</div></code></pre>
+
+<p>undefined代表的没有一般都不是人为手动控制的，大部分都是浏览器自主为空（后面可以赋值也可以不赋值）</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> num; <span class="hljs-comment">//=&gt;此时变量的值浏览器给分配的就是undefined</span>
+</div><div class="hljs-line">...
+</div><div class="hljs-line">后面可以赋值也可以不赋值
+</div></code></pre>
+
+<p>刘天瑞（BOY）的女朋友是null，他的男朋友是undefined</p>
+
+<hr>
+
+
+
+<h4 id="三-object对象数据类型">三、 object对象数据类型</h4>
+
+<blockquote>
+  <p>普通对象</p>
+  
+  <ul><li><p>由大括号包裹起来的</p></li>
+  <li><p>由零到多组属性名和属性值（键值对）组成</p></li>
+  </ul>
+</blockquote>
+
+<p><code>属性是用来描述当前对象特征的，属性名是当前具备这个特征，属性值是对这个特征的描述（专业语法，属性名称为键[key]，属性值称为值[value]，一组属性名和属性值称为一组键值对）</code></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> obj = {
+</div><div class="hljs-line">    <span class="hljs-attr">name</span>:<span class="hljs-string">'大白大白'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">age</span>:<span class="hljs-number">9</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line"><span class="hljs-comment">//=&gt;对象的操作：对键值对的增删改查</span>
+</div></code></pre>
+
+<p>语法：对象.属性 / 对象[属性]</p>
+
+<p><strong>【获取】</strong></p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs stylus"><div class="hljs-line">obj<span class="hljs-selector-class">.name</span> 
+</div></code></pre>
+
+<p>obj[‘name’]  一般来说，对象的属性名都是字符串格式的（属性值不固定，任何格式都可以）</p>
+
+<p><strong>【增/改】</strong> <br>
+JS对象中属性名是不允许重复的，是唯一的</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs delphi"><div class="hljs-line">obj.<span class="hljs-keyword">name</span>=<span class="hljs-string">'周啸天'</span>; <span class="hljs-comment">//=&gt;原有对象中存在NAME属性，此处属于修改属性值</span>
+</div><div class="hljs-line">obj.sex=<span class="hljs-string">'男'</span>; <span class="hljs-comment">//=&gt;原有对象中不存在SEX，此处相当于给当前对象新增加一个属性SEX</span>
+</div><div class="hljs-line">obj[<span class="hljs-string">'age'</span>]=<span class="hljs-number">28</span>;
+</div></code></pre>
+
+<p><strong>【删】</strong> <br>
+彻底删除：对象中不存在这个属性了</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs sql"><div class="hljs-line"><span class="hljs-keyword">delete</span> obj[<span class="hljs-string">'age'</span>];
+</div></code></pre>
+
+<p><strong>【假删除】</strong>：并没有移除这个属性，只是让当前属性的值为空</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs abnf"><div class="hljs-line">obj.sex=null<span class="hljs-comment">;</span>
+</div></code></pre>
+
+<hr>
+
+<p>在获取属性值的时候，如果当前对象有这个属性名，则可以正常获取到值（哪怕是null），但是如果没有这个属性名，则获取的结果是undefined</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">obj[<span class="hljs-string">'friends'</span>] =&gt;<span class="hljs-literal">undefined</span>
+</div></code></pre>
+
+<p>思考题：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> obj = {
+</div><div class="hljs-line">    <span class="hljs-attr">name</span>:<span class="hljs-string">'大白大白'</span>,
+</div><div class="hljs-line">    <span class="hljs-attr">age</span>:<span class="hljs-number">9</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> name = <span class="hljs-string">'zhufeng'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">obj.name <span class="hljs-comment">//'大白大白'  获取的是NAME属性的值</span>
+</div><div class="hljs-line">obj[<span class="hljs-string">'name'</span>] <span class="hljs-comment">//'大白大白' 获取的是NAME属性的值</span>
+</div><div class="hljs-line">obj[name] <span class="hljs-comment">//此处的NAME是一个变量,我们要获取的属性名不叫做NAME，是NAME存储的值'zhufeng' =&gt;obj['zhufeng'] =&gt;没有这个属性,属性值是undefined</span>
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p><strong>(1,2)’name’ 和 (3)name 的区别?</strong>(上)</p>
+  
+  <ul><li><p>‘name’是一个字符串值，它代表的是本身</p></li>
+  <li><p>name是一个变量，它代表的是本身存储的这个值</p></li>
+  </ul>
+</blockquote>
+
+<ol start="1"><li rel="1"><p>一个对象中的属性名不仅仅是字符串格式的，还有可能是数字格式的</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dart"><div class="hljs-line"><span class="hljs-keyword">var</span> obj = {
+</div><div class="hljs-line">    name:<span class="hljs-string">'大白大白'</span>,
+</div><div class="hljs-line">    <span class="hljs-number">0</span>:<span class="hljs-number">100</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line">obj[<span class="hljs-number">0</span>] =&gt;<span class="hljs-number">100</span>
+</div><div class="hljs-line">obj[<span class="hljs-string">'0'</span>] =&gt;<span class="hljs-number">100</span>
+</div><div class="hljs-line">obj<span class="hljs-number">.0</span> =&gt;Uncaught SyntaxError: Unexpected number
+</div></code></pre>
+
+<hr>
+
+<ol start="2"><li rel="2"><p>当我们存储的属性名不是字符串也不是数字的时候，浏览器会把这个值转换为字符串（toString），然后再进行存储</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">obj[{}]=<span class="hljs-number">300</span>;  <span class="hljs-comment">//先把({}).toString()后的结果作为对象的属性名存储进来 </span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">obj[<span class="hljs-string">'[object Object]'</span>]=<span class="hljs-number">300</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">obj[{}] <span class="hljs-comment">//获取的时候也是先把对象转换为字符串'[object Object]',然后获取之前存储的300</span>
+</div></code></pre>
+
+<hr>
+
+<ol start="3"><li rel="3"><p>数组对象（对象由键值对组成的）(数组也是对象)</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs dart"><div class="hljs-line"><span class="hljs-keyword">var</span> oo = {
+</div><div class="hljs-line">    a:<span class="hljs-number">12</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> ary = [<span class="hljs-number">12</span>,<span class="hljs-number">23</span>]; <span class="hljs-comment">//=&gt;12和23都是属性值，属性名呢？</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">通过观察结果，我们发现数组对象的属性名是数字（我们把数字属性名称为当前对象的索引）
+</div><div class="hljs-line">ary[<span class="hljs-number">0</span>]
+</div><div class="hljs-line">ary[<span class="hljs-string">'0'</span>]
+</div><div class="hljs-line">ary<span class="hljs-number">.0</span>  =&gt;报错
+</div></code></pre></div>
