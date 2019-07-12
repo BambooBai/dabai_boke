@@ -54,10 +54,10 @@ a{text-decoration:none;}
 .nav-mini.nav .nav-item:hover .nav-item a{color:#FFF;}
 .nav-mini.nav .nav-item:hover a:before{opacity:1;}
 .nav-mini.nav .nav-item:hover ul{display: block;}
-
+.nav-mini.nav ~ #content{width:94%;}
 
 /* content */
-#content{float: right;width: 78%;}
+#content{float: right;width: 78%;padding-right: 30px;}
 #content .title{text-align: right;margin-right: 20px;margin-top:10px;}
 #content .title img{width: 50px;border-radius: 50%;}
 

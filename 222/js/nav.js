@@ -2,6 +2,7 @@ $(function(){
     var menu={
         init:function(){
             this.views={};
+            this.defaultShowItem();
             this.navOne();
             this.navTwo();
             this.mini();
@@ -40,16 +41,29 @@ $(function(){
             $('.nav-item ul li a').on('click',function(e){
                 $('.nav-item ul li').removeClass('active');
                 $(this).parent('li').addClass('active');
+                $('#content .text').css('display','none');
 
                 var src=$(this).attr('dataSrc');
                 if(!self.views[src]){
                    self.ajaxRequest(src);
                 }else{
-                    $('#content .text').html(self.views[src]);
+                    $('#content .text').html(self.views[src]).fadeIn();
                 }
-               
-                
+                localStorage.setItem('defaultItem',JSON.stringify({navShow:$(this).parents('.nav-item').index(),active:$(this).parent().index()}));
             })
+        },
+        defaultShowItem:function(){
+            var item=localStorage.getItem('defaultItem');
+            var curItem='';
+            if(!item){
+                localStorage.setItem('defaultItem',JSON.stringify({navShow:6,active:0}));
+                curItem=$('.nav>ul>li').eq(6).addClass('nav-show').find('li:first-child');
+            }else{
+                parseItem=JSON.parse(item);
+                curItem=$('.nav>ul>li').eq(parseItem.navShow).addClass('nav-show').find('li').eq(parseItem.active);
+            }
+            curItem.addClass('active');
+            this.ajaxRequest(curItem.find('a').attr('dataSrc'));
         },
         ajaxRequest:function(src){
             var self=this;
@@ -59,7 +73,7 @@ $(function(){
                 dataType:'html',
                 success : function(result) {
                     self.views[src]=result;
-                    $('#content .text').html(self.views[src]);
+                    $('#content .text').html(self.views[src]).fadeIn();
                 },
                 //请求失败，包含具体的错误信息
                 error : function(e){

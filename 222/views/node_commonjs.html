@@ -1,0 +1,304 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="深入modulecommonjs规范">Module：Commonjs规范</h3>
+
+<p></p>
+
+
+
+<h4 id="一为什么有模块化">一、为什么有模块化</h4>
+
+<p>我们的代码方便维护，每个功能放到一个模块内 <br>
+命名问题，污染全局变量 <br>
+浏览器的文件加载，http请求，异步的问题</p>
+
+<p>普通解决办法：</p>
+
+<ol><li rel="1"><p>单例模式,命名空间，不能完全解决这个问题</p></li>
+<li rel="2"><p>IIFE 自执行函数，实现模块的功能，要把最终的结果对外暴露</p></li>
+<li rel="3"><p>node中实现模块化非常容易 node可以读写文件，用nodeapi读取文件 实现模块的功能</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">var</span> obj={
+</div><div class="hljs-line">    <span class="hljs-attr">a</span>:<span class="hljs-number">1</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> {}
+</div><div class="hljs-line">})()
+</div></code></pre>
+
+<blockquote>
+  <p><code>commonjs</code>规范定义了几个点(<strong>同步的</strong>)</p>
+  
+  <ol><li rel="1"><p>如何声明一个模块；node中一个文件就是一个模块</p></li>
+  <li rel="2"><p>每个模块都需要导出最终结果 <code>module.exports</code></p></li>
+  <li rel="3"><p>每个模块引用其他的模块的时候需要使用<code>require</code>语法</p></li>
+  </ol>
+</blockquote>
+
+<hr>
+
+
+
+<h4 id="二commonjs执行原理">二、Commonjs执行原理</h4>
+
+<blockquote>
+  <p>执行原理：</p>
+  
+  <ul><li><p>就是把文件读取出来之后加一个 函数执行 最终返回的是module.exports</p></li>
+  <li><p>module.exports 和exports 对象指定同一个空间 但是expors指向改变了不会导致module.exports 更改</p></li>
+  <li><p>默认如果使用了exports.a 赋值了 在更改module.exports 那么a会丢失</p></li>
+  </ul>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line">(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">module</span>.exports=exports={};
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports;
+</div><div class="hljs-line">})();
+</div></code></pre>
+
+<hr>
+
+<blockquote>
+  <p>需求：读取一个文件后 读到的内容是一个字符串 怎么把一个字符串执行</p>
+</blockquote>
+
+<ol start="1"><li rel="1"><p><code>eval</code>：不干净的执行，eval会取当前模块中的变量</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> a = <span class="hljs-number">100</span>;
+</div><div class="hljs-line"><span class="hljs-built_in">eval</span>(<span class="hljs-string">'console.log(a)'</span>)
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p><code>new Function</code> <br>
+new Function的第一个参数可以传参数，str如果有未声明的变量，就拿参数当成变量了。不太干净的执行</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> str = <span class="hljs-string">`let str = 'hello'`</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> fn = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Function</span>(str+<span class="hljs-string">'\r\n return str'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> r = fn();
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(r);
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p><code>vm</code> 沙箱 虚拟机 <br>
+<code>runInThisContext</code> 可以让我们的代码在一个干净的上下文中执行</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> vm = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vm'</span>); 
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> a=<span class="hljs-number">10</span>;
+</div><div class="hljs-line">vm.runInThisContext(<span class="hljs-string">'console.log(a)'</span>);<span class="hljs-comment">//这里取不到a，干净的</span>
+</div></code></pre>
+
+<hr>
+
+
+
+<h4 id="三分析内置模块path属性">三、分析内置模块path属性</h4>
+
+<p>专门处理路径的 <code>path.resolve  path.join  path.extname  path.dirname</code></p>
+
+<ul><li><p>path.resolve</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">console</span>.log(path.resolve(<span class="hljs-string">'dir'</span>,<span class="hljs-string">'xxx'</span>));<span class="hljs-comment">//解析出一个绝对路径</span>
+</div></code></pre>
+
+<ul><li><p>path.join</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">console</span>.log(path.join(__dirname,<span class="hljs-string">'dir'</span>, <span class="hljs-string">'xxx'</span>));<span class="hljs-comment">//如果不加'/'，和上面path.resolve等同</span>
+</div></code></pre>
+
+<ul><li><p>path.extname <br>
+扩展名</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ul><li><p>path.dirname</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-built_in">console</span>.log(path.dirname(__dirname)); <span class="hljs-comment">// 取当前文件的父路径</span>
+</div></code></pre>
+
+<ul><li><p>__dirname：当前文件所在的目录名</p></li>
+<li><p>__filename：当前文件名字</p></li>
+</ul>
+
+<blockquote>
+  <p>比较<code>path.resolve</code> 和 <code>path.join</code> <br>
+  如果路径里自己需要添加’/’，要使用path.join ，如果纯绝对路径不加’/’,则使用path.resolve;path.resolve如果加’/’ ，则到了c盘</p>
+</blockquote>
+
+
+
+<h4 id="四手写commonjs">四、手写Commonjs</h4>
+
+<blockquote>
+  <p><strong>实现过程：</strong> <br>
+  1) 我们在require上打了个断点 <br>
+  2) 每个模块都有一个require方法 Module.prototype.require <br>
+  3)  Module._load 模块的加载 <br>
+  4） Module._resolveFilename 解析出文件的绝对路径 <br>
+  5） Module._cache 模块的缓存 如果有直接返回module.exports <br>
+  6)  产生模块 new Module 模块上有两个重要的属性 一个是id 另一个是exports对象 <br>
+  7) 将模块放到缓存中 <br>
+  8） 尝试加载模块  require(‘./a.js’) require(‘.json’) require(‘.node’) <br>
+  9) Module._extensions 根据名字做对应的处理  读取文件 <br>
+  10)  Module.wrap 给内容包裹起来 <br>
+  11) runInthisContext</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> vm = <span class="hljs-built_in">require</span>(<span class="hljs-string">'vm'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Module</span>(<span class="hljs-params">id</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.id = id;
+</div><div class="hljs-line">  <span class="hljs-keyword">this</span>.exports = {};
+</div><div class="hljs-line">}
+</div><div class="hljs-line">Module._cache = {}
+</div><div class="hljs-line">Module._extensions = {} <span class="hljs-comment">// [.js,.json:]</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">req</span>(<span class="hljs-params">id</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 把路径转化成绝对路径, 如果没有后缀 需要依次增加.js .json .node 来尝试加载模块</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> absPath = path.resolve(__dirname, id); <span class="hljs-comment">// 转化出一个绝对路径</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// 如果这个文件可以访问 说明存在 如果抛出异常说明文件不存在 不存在需要增加文件的后缀</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// fs.accessSync(absPath) 解决文件名查找的问题 如果没有 就依次增加.js .json</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// 缓存根据的是绝对路径 </span>
+</div><div class="hljs-line">  <span class="hljs-keyword">if</span>(Module._cache[absPath]){ <span class="hljs-comment">// 如果有缓存拿到的就是上一次返回的结果</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> Module._cache[absPath].exports;
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> <span class="hljs-built_in">module</span> = <span class="hljs-keyword">new</span> Module(absPath); <span class="hljs-comment">// 创建一个模块</span>
+</div><div class="hljs-line">  Module._cache[absPath] = <span class="hljs-built_in">module</span>;
+</div><div class="hljs-line">  <span class="hljs-comment">// 尝试根据模块的后缀加载文件</span>
+</div><div class="hljs-line">  tryModuleLoad(<span class="hljs-built_in">module</span>);
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports <span class="hljs-comment">// 默认会返回module.exports对象</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">Module.wrapper = [
+</div><div class="hljs-line">  <span class="hljs-string">'(function (exports, require, module, __filename, __dirname) { '</span>,
+</div><div class="hljs-line">  <span class="hljs-string">'\n});'</span>
+</div><div class="hljs-line">];
+</div><div class="hljs-line">Module._extensions[<span class="hljs-string">'.js'</span>] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">module</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> content = fs.readFileSync(<span class="hljs-built_in">module</span>.id, <span class="hljs-string">'utf8'</span>);
+</div><div class="hljs-line">  <span class="hljs-comment">// 构建了一个匿名的函数字符串</span>
+</div><div class="hljs-line">  content = Module.wrapper[<span class="hljs-number">0</span>] + content + Module.wrapper[<span class="hljs-number">1</span>];
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> fn = vm.runInThisContext(content);
+</div><div class="hljs-line">  fn.call(<span class="hljs-built_in">module</span>.exports, exports, req, <span class="hljs-built_in">module</span>);<span class="hljs-comment">// module.exports = 'zf'</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line">Module._extensions[<span class="hljs-string">'.json'</span>] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{ }
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tryModuleLoad</span>(<span class="hljs-params">module</span>) </span>{ <span class="hljs-comment">// 尝试加载这个模块</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> extension = path.extname(<span class="hljs-built_in">module</span>.id) || <span class="hljs-string">'.js'</span>; <span class="hljs-comment">// 获取文件的扩展名</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// 根据js文件模块的加载策略加载模块</span>
+</div><div class="hljs-line">  Module._extensions[extension](<span class="hljs-built_in">module</span>);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> str = req(<span class="hljs-string">'./a'</span>);
+</div><div class="hljs-line">str = req(<span class="hljs-string">'./a'</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(str);
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<p>自己改版：</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">const</span> path=<span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> fs=<span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> vm=<span class="hljs-built_in">require</span>(<span class="hljs-string">'vm'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Module</span>(<span class="hljs-params">id</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.id=id;
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.exports={};
+</div><div class="hljs-line">}
+</div><div class="hljs-line">Module._cache={};
+</div><div class="hljs-line">Module.wrap=[<span class="hljs-string">"(function(exports,module,require){"</span>,<span class="hljs-string">"})"</span>]
+</div><div class="hljs-line">Module._extensions={
+</div><div class="hljs-line">    <span class="hljs-string">'.js'</span>:<span class="hljs-function"><span class="hljs-params">module</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> content=fs.readFileSync(<span class="hljs-built_in">module</span>.id);
+</div><div class="hljs-line">        <span class="hljs-keyword">const</span> str=Module.wrap[<span class="hljs-number">0</span>]+content+Module.wrap[<span class="hljs-number">1</span>];
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> fn=vm.runInThisContext(str);
+</div><div class="hljs-line">        fn.call(<span class="hljs-built_in">module</span>.exports,<span class="hljs-built_in">module</span>.exports,<span class="hljs-built_in">module</span>,req);
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    <span class="hljs-string">'.json'</span>:<span class="hljs-function"><span class="hljs-params">module</span>=&gt;</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> json = fs.readFileSync(<span class="hljs-built_in">module</span>.id,<span class="hljs-string">'utf8'</span>);
+</div><div class="hljs-line">        <span class="hljs-built_in">module</span>.exports = json;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line">Module.extName=<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">id</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> absPath=path.resolve(__dirname,id);
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> index=<span class="hljs-number">-1</span>;
+</div><div class="hljs-line">    <span class="hljs-keyword">const</span> extNames=<span class="hljs-built_in">Object</span>.keys(Module._extensions);
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> old=absPath;
+</div><div class="hljs-line">    <span class="hljs-comment">//查找文件三种情况：</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//1. 找不到后缀名的事件</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//2. 加了后缀名，直接返回文件</span>
+</div><div class="hljs-line">    <span class="hljs-comment">//3. 没有加后缀名，把后缀名事件对象中index加1，依次查找。</span>
+</div><div class="hljs-line">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">find</span>(<span class="hljs-params">absPath</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span>(index===extNames.length<span class="hljs-number">-1</span>){
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> absPath;
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">try</span>{
+</div><div class="hljs-line">            fs.accessSync(absPath);
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> absPath;
+</div><div class="hljs-line">        }<span class="hljs-keyword">catch</span>(err){
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> ext=extNames[++index];
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> newPath=old+ext;
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> find(newPath);<span class="hljs-comment">//</span>
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    absPath=find(absPath);
+</div><div class="hljs-line">    <span class="hljs-keyword">try</span>{
+</div><div class="hljs-line">        fs.accessSync(absPath);
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> absPath;
+</div><div class="hljs-line">    }<span class="hljs-keyword">catch</span>(e){
+</div><div class="hljs-line">        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'error'</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line">Module._load=<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">id</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">const</span> filename=Module.extName(id);
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span>(Module._cache[filename]){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> Module._cache[filename].exports;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">const</span> <span class="hljs-built_in">module</span>=<span class="hljs-keyword">new</span> Module(id);
+</div><div class="hljs-line">    Module._cache[filename]=<span class="hljs-built_in">module</span>;
+</div><div class="hljs-line">    tryLoadModule(<span class="hljs-built_in">module</span>,filename);
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tryLoadModule</span>(<span class="hljs-params">module,filename</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">const</span> extName_=path.extname(filename);
+</div><div class="hljs-line">    <span class="hljs-built_in">module</span>.id=<span class="hljs-built_in">module</span>.id+extName_;
+</div><div class="hljs-line">    Module._extensions[extName_](<span class="hljs-built_in">module</span>);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">req</span>(<span class="hljs-params">id</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> Module._load(id);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> m=req(<span class="hljs-string">'./age'</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">console</span>.log(m);
+</div></code></pre></div>

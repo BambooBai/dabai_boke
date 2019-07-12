@@ -1,0 +1,84 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="react-setstate">React ：SetState</h3>
+
+<p></p>
+
+<blockquote>
+  <ul><li><p>面试常问？ <br>
+  为什么 放到setTimeout中 就会渲染多次？ <br>
+  setState是批量更新，但是不是一直批量更新；</p></li>
+  </ul>
+</blockquote>
+
+<p><strong>1. 原理</strong> <br>
+变量<code>isBatchingUpdate</code>是否批量更新；函数<code>transcation</code>批量更新函数</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">// 默认是批量更新的</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> isBatchingUpdate = <span class="hljs-literal">true</span>; <span class="hljs-comment">// 默认是批量更新</span>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> transcation = <span class="hljs-function">(<span class="hljs-params">component</span>) =&gt;</span> {
+</div><div class="hljs-line">  component.state = component.pendingState;
+</div><div class="hljs-line">  component.render();
+</div><div class="hljs-line">  isBatchingUpdate = <span class="hljs-literal">false</span>;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">My</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">constructor</span>() {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.state = { <span class="hljs-attr">number</span>: <span class="hljs-number">0</span> }; <span class="hljs-comment">// 自己的状态</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.pendingState = { ...this.state };
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  setState(obj) {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (isBatchingUpdate) {
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.pendingState = { ... this.pendingState, ...obj };
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> {
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.pendingState = { ... this.pendingState, ...obj };
+</div><div class="hljs-line">      transcation(<span class="hljs-keyword">this</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  update() {
+</div><div class="hljs-line">    setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">number</span>: <span class="hljs-keyword">this</span>.state.number + <span class="hljs-number">1</span> });
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">number</span>: <span class="hljs-keyword">this</span>.state.number + <span class="hljs-number">3</span> });
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">number</span>: <span class="hljs-keyword">this</span>.state.number + <span class="hljs-number">2</span> });
+</div><div class="hljs-line">    }, <span class="hljs-number">0</span>);
+</div><div class="hljs-line">    transcation(<span class="hljs-keyword">this</span>);
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  render() {
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.state.number);
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> my = <span class="hljs-keyword">new</span> My();
+</div><div class="hljs-line"><span class="hljs-comment">// 内部会先调用更新方法</span>
+</div><div class="hljs-line">my.update();
+</div></code></pre>
+
+<p><strong>2. setState回调函数</strong> <br>
+ <code>setState 可以写成函数的形式 或者回调函数的形式 写成函数的形式 相当于下一个状态是依赖于上一个状态的</code></p>
+
+<ul><li><p>函数形式</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">prevState</span>) =&gt;</span> ({ <span class="hljs-attr">count</span>: prevState.count + <span class="hljs-number">1</span> }));
+</div><div class="hljs-line"><span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">prevState</span>) =&gt;</span> ({ <span class="hljs-attr">count</span>: prevState.count + <span class="hljs-number">3</span> }));
+</div><div class="hljs-line"><span class="hljs-keyword">this</span>.setState(<span class="hljs-function">(<span class="hljs-params">prevState</span>) =&gt;</span> ({ <span class="hljs-attr">count</span>: prevState.count + <span class="hljs-number">2</span> }));
+</div></code></pre>
+
+<ul><li><p>回调函数形式</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"> <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">count</span>:<span class="hljs-keyword">this</span>.state.count+<span class="hljs-number">1</span>},()=&gt;{
+</div><div class="hljs-line">      <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">count</span>:<span class="hljs-keyword">this</span>.state.count+<span class="hljs-number">3</span>},()=&gt;{
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.setState({ <span class="hljs-attr">count</span>: <span class="hljs-keyword">this</span>.state.count +<span class="hljs-number">2</span>});
+</div><div class="hljs-line">      });
+</div><div class="hljs-line">    });
+</div></code></pre></div>

@@ -1,0 +1,113 @@
+<div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h3 id="react-redux">React ： redux</h3>
+
+<p></p>
+
+<p>缺少完善的补充</p>
+
+<blockquote>
+  <p>1.redux原则就是一个项目只有一个store 只有一个状态 （只有一个管理员）</p>
+</blockquote>
+
+<ul><li><p>redux.js</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createStore</span>(<span class="hljs-params">reducer</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> state;
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> getState = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> state;
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> listeners = [];
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> dispatch = <span class="hljs-function">(<span class="hljs-params">action</span>)=&gt;</span>{
+</div><div class="hljs-line">    state = reducer(state,action);
+</div><div class="hljs-line">    listeners.forEach(<span class="hljs-function"><span class="hljs-params">fn</span>=&gt;</span>fn());
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  dispatch({<span class="hljs-attr">type</span>:<span class="hljs-string">'@INIT'</span>});
+</div><div class="hljs-line">  <span class="hljs-keyword">let</span> subscribe = <span class="hljs-function">(<span class="hljs-params">fn</span>)=&gt;</span>{
+</div><div class="hljs-line">    listeners.push(fn);
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">      listeners = listeners.filter(<span class="hljs-function"><span class="hljs-params">l</span>=&gt;</span>l!=fn);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> {
+</div><div class="hljs-line">    getState,
+</div><div class="hljs-line">    dispatch,
+</div><div class="hljs-line">    subscribe
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> { createStore }
+</div></code></pre>
+
+<ul><li><p>action-types</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-comment">// 计数器</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> INCREMENT = <span class="hljs-string">'INCREMENT'</span>;
+</div></code></pre>
+
+<ul><li><p>action</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Types <span class="hljs-keyword">from</span> <span class="hljs-string">'../action-types'</span>;
+</div><div class="hljs-line"><span class="hljs-comment">// action  reducer 纯函数 输入一定 返回就一定</span>
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> {
+</div><div class="hljs-line">  add(val){
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> {<span class="hljs-attr">type</span>:Types.INCREMENT,<span class="hljs-attr">count</span>:val}
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>reducer</p></li>
+</ul>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Types <span class="hljs-keyword">from</span> <span class="hljs-string">'../action-types'</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">counter</span>(<span class="hljs-params">state = {number:<span class="hljs-number">0</span>},action</span>)</span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">switch</span>(action.type){
+</div><div class="hljs-line">    <span class="hljs-keyword">case</span> Types.INCREMENT:
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> {<span class="hljs-attr">number</span>:state.number+ action.count}
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> state;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> counter;
+</div></code></pre>
+
+<ul><li><p>reducer index.js combineReducers</p></li>
+</ul>
+
+<blockquote>
+  <p><code>combineReducers</code> 是把两个状态合并成一个 并且把reducer也变成一个</p>
+</blockquote>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">import</span> counter <span class="hljs-keyword">from</span> <span class="hljs-string">'./counter'</span>;
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> todo <span class="hljs-keyword">from</span> <span class="hljs-string">'./todo'</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 需要把每个reducer都执行 把结果放到一个新的对象上 </span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">combineReducers</span>(<span class="hljs-params">reducers</span>) </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">state = {}, action</span>) </span>{ <span class="hljs-comment">// {counter:{number:0},todo:[]}</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> obj = {};
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> reducers) {
+</div><div class="hljs-line">      obj[key] = reducers[key](state[key], action);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> obj
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> combineReducers({
+</div><div class="hljs-line">  <span class="hljs-attr">counter</span>: counter,
+</div><div class="hljs-line">  todo
+</div><div class="hljs-line">});
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div></code></pre></div>
