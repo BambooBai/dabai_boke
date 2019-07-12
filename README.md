@@ -1,1 +1,3 @@
-"# dabai_boke" 
+# dabai_boke
+
+运行  node server
