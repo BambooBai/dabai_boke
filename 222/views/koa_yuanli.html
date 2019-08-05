@@ -1,0 +1,186 @@
+<!DOCTYPE html><html><head><title>Koa原理</title><meta charset='utf-8'><link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'><style></style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+<h3 id="koa原理">Koa原理</h3>
+
+<blockquote>
+  <p>首先创建一个文件夹</p>
+  
+  <ol><li rel="1"><p>创建<code>context.js</code>、<code>application.js</code>、<code>response.js</code>、<code>request.js</code></p></li>
+  <li rel="2"><p>在<code>application.js</code> 继承<code>events</code> (事件触发器（原理观察者模式）)（添加error方法）</p></li>
+  <li rel="3"><p>将其他js文件引入<code>application.js</code></p></li>
+  </ol>
+</blockquote>
+
+<ol start="1"><li rel="1"><p><code>context.js</code> <br>
+使用的是<code>__defineGetter__</code>和<code>__defineSetter__</code> <br>
+在mdn上显示不建议用(当是写koa时间比较早，后期没有更新)</p></li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> ctx={};
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">defineGetter</span>(<span class="hljs-params">property,key</span>)</span>{
+</div><div class="hljs-line">    ctx.__defineGetter__(key,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[property][key];
+</div><div class="hljs-line">    })
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">defineSetter</span>(<span class="hljs-params">property,key</span>)</span>{
+</div><div class="hljs-line">    ctx.__defineSetter__(key,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>)</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[property][key]=value;
+</div><div class="hljs-line">    })
+</div><div class="hljs-line">}
+</div><div class="hljs-line">defineGetter(<span class="hljs-string">'request'</span>,<span class="hljs-string">'url'</span>);
+</div><div class="hljs-line">defineSetter(<span class="hljs-string">'response'</span>,<span class="hljs-string">'body'</span>);
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.export=ctx;
+</div></code></pre>
+
+<ol start="2"><li rel="2"><p><code>require.js</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> request={
+</div><div class="hljs-line">    get url(){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.req.url
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.export=request;
+</div></code></pre>
+
+<ol start="3"><li rel="3"><p><code>response.js</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> reponse={
+</div><div class="hljs-line">    <span class="hljs-attr">_body</span>:<span class="hljs-string">''</span>,
+</div><div class="hljs-line">    get body(){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._body;  
+</div><div class="hljs-line">    },
+</div><div class="hljs-line">    set body(value){
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>._body=value;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.export=response;
+</div></code></pre>
+
+<ol start="4"><li rel="4"><p><code>application.js</code></p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> context = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./context'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./request'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> response = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./response'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> EventEmitter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> Stream = <span class="hljs-built_in">require</span>(<span class="hljs-string">'stream'</span>);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Koa</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">EventEmitter</span></span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">constructor</span>(){
+</div><div class="hljs-line">        <span class="hljs-keyword">super</span>();
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.middlewares = [];
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.context = <span class="hljs-built_in">Object</span>.create(context); <span class="hljs-comment">// 防止用户直接修改context对象</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.request = <span class="hljs-built_in">Object</span>.create(request);
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.response = <span class="hljs-built_in">Object</span>.create(response);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    use(fn){
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.middlewares.push(fn);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-comment">// 此方法用来产生ctx上下文</span>
+</div><div class="hljs-line">    createContext(req,res){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> ctx = <span class="hljs-keyword">this</span>.context;
+</div><div class="hljs-line">        <span class="hljs-comment">// 自己封装的</span>
+</div><div class="hljs-line">        ctx.request = <span class="hljs-keyword">this</span>.request;
+</div><div class="hljs-line">        ctx.response = <span class="hljs-keyword">this</span>.response;
+</div><div class="hljs-line">        <span class="hljs-comment">// 原生的 为了可以在自己的request属性上拿到req就把req挂载在了自己封装的对象上</span>
+</div><div class="hljs-line">        ctx.request.req = ctx.req = req;
+</div><div class="hljs-line">        ctx.response.res = ctx.res = res;
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> ctx;
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    compose(ctx,middlewares){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> i = <span class="hljs-number">-1</span>; <span class="hljs-comment">// 通过此变量 来控制用户是否多次调用了next方法</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> dispatch = <span class="hljs-keyword">async</span> (index) =&gt;{ <span class="hljs-comment">// index =0</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(index&lt;= i) <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.reject(<span class="hljs-string">'multi called next()~~~~'</span>);
+</div><div class="hljs-line">            i = index; <span class="hljs-comment">// i = 0;</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(index === middlewares.length) <span class="hljs-keyword">return</span>; <span class="hljs-comment">// 达到最后一个中间件 在调用next方法无效</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> middleware = middlewares[index];
+</div><div class="hljs-line">            <span class="hljs-comment">// 第一个中间执行的时候 调用了第二个中间件 要等待第二个中间件执行后 完成第一个中间件</span>
+</div><div class="hljs-line">            <span class="hljs-comment">// 第一个中间件 调用next会触发下一个中间件执行</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> middleware(ctx,()=&gt;dispatch(index+<span class="hljs-number">1</span>));
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> dispatch(<span class="hljs-number">0</span>);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    handleRequest(req,res){
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> ctx = <span class="hljs-keyword">this</span>.createContext(req,res); <span class="hljs-comment">// 创建上下文</span>
+</div><div class="hljs-line">        res.statusCode = <span class="hljs-number">404</span>; <span class="hljs-comment">// 预先定义一个404状态码</span>
+</div><div class="hljs-line">        <span class="hljs-comment">// compose 函数 组合函数 n种的方式 reduce  function next()</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> p = <span class="hljs-keyword">this</span>.compose(ctx,<span class="hljs-keyword">this</span>.middlewares); <span class="hljs-comment">// 组合后会产生一个新的promise，等待这个promise执行完成后 会取ctx.body 返回结果</span>
+</div><div class="hljs-line">        p.then(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>{
+</div><div class="hljs-line">            <span class="hljs-built_in">console</span>.log(body.path);
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span>(body <span class="hljs-keyword">instanceof</span> Stream){
+</div><div class="hljs-line">                res.setHeader(<span class="hljs-string">'Content-Type'</span>,<span class="hljs-string">'application/octet-stream'</span>);
+</div><div class="hljs-line">                <span class="hljs-comment">// 下载文件 文件的名字是xxx</span>
+</div><div class="hljs-line">                res.setHeader(<span class="hljs-string">'Content-Disposition'</span>,<span class="hljs-string">`attachment; filename=<span class="hljs-subst">${body.path}</span>`</span>)
+</div><div class="hljs-line">                body.pipe(res);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> body === <span class="hljs-string">'object'</span>){
+</div><div class="hljs-line">                res.setHeader(<span class="hljs-string">'Content-Type'</span>,<span class="hljs-string">'application/json'</span>);
+</div><div class="hljs-line">                res.end(<span class="hljs-built_in">JSON</span>.stringify(body));
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(body){
+</div><div class="hljs-line">                res.end(body);
+</div><div class="hljs-line">            }<span class="hljs-keyword">else</span>{
+</div><div class="hljs-line">                res.end(<span class="hljs-string">`Not Found`</span>);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }).catch(<span class="hljs-function">(<span class="hljs-params">err</span>)=&gt;</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.emit(<span class="hljs-string">'error'</span>,err);
+</div><div class="hljs-line">        })
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    listen(...args){
+</div><div class="hljs-line">       <span class="hljs-comment">// 创建一个http服务</span>
+</div><div class="hljs-line">       <span class="hljs-keyword">let</span> server = http.createServer(<span class="hljs-keyword">this</span>.handleRequest.bind(<span class="hljs-keyword">this</span>));
+</div><div class="hljs-line">       <span class="hljs-comment">// 监听端口号 启动一个服务</span>
+</div><div class="hljs-line">       server.listen(...args);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.exports = Koa;
+</div></code></pre>
+
+<ol start="4"><li rel="4"><p>case</p></li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> Koa=<span class="hljs-built_in">require</span>(<span class="hljs-string">'./koa/application'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> fs=<span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">let</span> app=<span class="hljs-keyword">new</span> Koa();
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/** 1. compose中间件**/</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// app.use(async (ctx,next)=&gt;{</span>
+</div><div class="hljs-line"><span class="hljs-comment">//     console.log(1);</span>
+</div><div class="hljs-line"><span class="hljs-comment">//     await next();</span>
+</div><div class="hljs-line"><span class="hljs-comment">//     console.log(2);</span>
+</div><div class="hljs-line"><span class="hljs-comment">// })</span>
+</div><div class="hljs-line"><span class="hljs-comment">// app.use(async (ctx,next)=&gt;{</span>
+</div><div class="hljs-line"><span class="hljs-comment">// console.log(3);</span>
+</div><div class="hljs-line"><span class="hljs-comment">// await next();</span>
+</div><div class="hljs-line"><span class="hljs-comment">// console.log(4);</span>
+</div><div class="hljs-line"><span class="hljs-comment">// })</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/***2. body**/</span>
+</div><div class="hljs-line"><span class="hljs-comment">// app.use(async (ctx,next)=&gt;{</span>
+</div><div class="hljs-line"><span class="hljs-comment">//     ctx.body={name:'dabai'};</span>
+</div><div class="hljs-line"><span class="hljs-comment">// })</span>
+</div><div class="hljs-line">app.use(<span class="hljs-keyword">async</span> (ctx,next)=&gt;{
+</div><div class="hljs-line">    ctx.body=fs.createReadStream(<span class="hljs-string">'./1.json'</span>);
+</div><div class="hljs-line">})
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**3. events **/</span>
+</div><div class="hljs-line">app.on(<span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">error</span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(error,<span class="hljs-string">'-------dddd'</span>)
+</div><div class="hljs-line">})
+</div><div class="hljs-line">app.listen(<span class="hljs-number">3000</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`server start 3000`</span>)
+</div></code></pre></div></body></html>
